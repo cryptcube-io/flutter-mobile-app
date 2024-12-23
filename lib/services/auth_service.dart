@@ -1,9 +1,10 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 
 class AuthService {
   final _dio = Dio();
-  final String baseUrl = 'http://192.168.1.3:8048';
-
+  final String baseUrl = dotenv.env['BACKEND_URL'] ?? '';
   Future<String> signIn(String usernameOrEmail, String password) async 
   {
     try {
