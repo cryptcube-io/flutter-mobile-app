@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_app2/presentation/components/custom_navbar.dart';
-import 'signin_page.dart';
+import 'auth/signin_page.dart';
 import 'dart:developer' as developer;
 
 class HomePage extends StatefulWidget {
