@@ -1,37 +1,149 @@
 import 'package:flutter/material.dart';
+import 'package:my_app2/presentation/components/custom_navbar.dart';
 import 'signin_page.dart';
+import 'dart:developer' as developer;
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   final String token;
-  
+
   const HomePage({super.key, required this.token});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+   int _selectedIndex = 0; // For navigation bar
+
+  @override
+  void initState() {
+    super.initState();
+    developer.log('initState called', name: 'HomePage');
+    developer.log('Auth Token: ${widget.token}', name: 'HomePage');
+  } // initState
+
+  void _onNavItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    developer.log('Navigation item tapped: $index', name: 'HomePage');
+  } // 
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Called when a dependency of this State object changes
+    developer.log('didChangeDependencies called', name: 'HomePage');
+  }
+
+  @override
+  void didUpdateWidget(HomePage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Called whenever the widget configuration changes
+    developer.log('didUpdateWidget called', name: 'HomePage');
+
+    // Example of comparing old and new values
+    if (oldWidget.token != widget.token) {
+      developer.log('Token changed', name: 'HomePage');
+    }
+  }
+
+  @override
+  void dispose() {
+    // Cleanup when widget is removed
+    developer.log('dispose called', name: 'HomePage');
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
-        automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (_) => const SignInPage()),
-              );
-            },
+      backgroundColor: Colors.white,
+      body: SafeArea(
+          child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.notifications_outlined,
+                    color: Colors.blue,
+                    size: 28,
+                  ),
+                  onPressed: () {
+                    developer.log('Notification bell pressed',
+                        name: 'HomePage');
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Notifications'),
+                        duration: Duration(seconds: 1),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
+          Expanded(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                Container(
+                  width: 150,
+                  height: 150,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Colors.red.withOpacity(0.7),
+                      width: 2,
+                    ),
+                  ),
+                  child: const Center(
+                    child: Text(
+                      '650',
+                      style: TextStyle(
+                        fontSize: 40,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    
+                    children: [
+                      Icon(
+                        Icons.shield,
+                        size: 80,
+                        color: Colors.blue.withOpacity(0.7),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        '75%',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 40),
+              ])),
         ],
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text('Welcome to the Home Page!'),
-            const SizedBox(height: 16),
-            Text('Your token: ${token.substring(0, 20)}...'),
-          ],
-        ),
+      )),
+       bottomNavigationBar:CustomNavBar(
+        selectedIndex: _selectedIndex,
+        onItemTapped: _onNavItemTapped,
       ),
     );
   }

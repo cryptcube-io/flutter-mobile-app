@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:my_app2/presentation/pages/home_page.dart';
 import 'presentation/pages/signin_page.dart';
 
 Future<void> main() async {
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       debugShowCheckedModeBanner: false,
-      home: const SignInPage(),
+      home: const HomePage(token: "sffewwfwe",),
     );
   }
 }
