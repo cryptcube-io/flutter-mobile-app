@@ -20,7 +20,6 @@ class NavigationService {
   int get currentIndex => _currentIndex;
 
   Future<void> navigateToPage(BuildContext context, int index) async {
-    // if (_currentIndex == index) return; 
 
     _currentIndex = index;
     Widget page;

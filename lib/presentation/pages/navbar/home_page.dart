@@ -3,6 +3,8 @@ import 'package:my_app2/presentation/components/custom_navbar.dart';
 import '../auth/signin_page.dart';
 import 'dart:developer' as developer;
 
+import '../score/app_list.dart';
+
 class HomePage extends StatefulWidget {
   final String token;
 
@@ -13,36 +15,33 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-   int _selectedIndex = 0; // For navigation bar
+  int _selectedIndex = 0; 
 
   @override
   void initState() {
     super.initState();
     developer.log('initState called', name: 'HomePage');
     developer.log('Auth Token: ${widget.token}', name: 'HomePage');
-  } // initState
+  } 
 
   void _onNavItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
     developer.log('Navigation item tapped: $index', name: 'HomePage');
-  } // 
+  } //
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Called when a dependency of this State object changes
     developer.log('didChangeDependencies called', name: 'HomePage');
   }
 
   @override
   void didUpdateWidget(HomePage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Called whenever the widget configuration changes
     developer.log('didUpdateWidget called', name: 'HomePage');
 
-    // Example of comparing old and new values
     if (oldWidget.token != widget.token) {
       developer.log('Token changed', name: 'HomePage');
     }
@@ -50,17 +49,17 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
-    // Cleanup when widget is removed
+    
     developer.log('dispose called', name: 'HomePage');
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-          child: Column(
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: Colors.white,
+    body: SafeArea(
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -90,26 +89,37 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
           Expanded(
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                Container(
-                  width: 150,
-                  height: 150,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: Colors.red.withOpacity(0.7),
-                      width: 2,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    developer.log('Score circle tapped', name: 'HomePage');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AppList(),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    width: 150,
+                    height: 150,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.red.withOpacity(0.7),
+                        width: 2,
+                      ),
                     ),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      '650',
-                      style: TextStyle(
-                        fontSize: 40,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+                    child: const Center(
+                      child: Text(
+                        '650',
+                        style: TextStyle(
+                          fontSize: 40,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
                       ),
                     ),
                   ),
@@ -118,7 +128,6 @@ class _HomePageState extends State<HomePage> {
                   padding: const EdgeInsets.all(20),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    
                     children: [
                       Icon(
                         Icons.shield,
@@ -138,11 +147,13 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 const SizedBox(height: 40),
-              ])),
+              ],
+            ),
+          ),
         ],
-      )),
-       bottomNavigationBar:CustomNavBar(
       ),
-    );
-  }
+    ),
+    bottomNavigationBar: CustomNavBar(),
+  );
+}
 }
