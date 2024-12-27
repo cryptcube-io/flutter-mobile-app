@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class CustomNavBar extends StatelessWidget {
-  final int selectedIndex;
-  final Function(int) onItemTapped;
+import '../../services/navigation_service.dart';
 
-  const CustomNavBar({
+
+class CustomNavBar extends StatelessWidget {
+  final NavigationService navigationService = NavigationService();
+
+  CustomNavBar({
     super.key,
-    required this.selectedIndex,
-    required this.onItemTapped,
   });
 
   @override
@@ -35,11 +35,11 @@ class CustomNavBar extends StatelessWidget {
           icon: Icon(Icons.view_in_ar_outlined),
           label: 'Cube',
         ),
-      ], // BottomNavigationBarItem array
-      currentIndex: selectedIndex,
+      ],
+      currentIndex: navigationService.currentIndex,
       selectedItemColor: Colors.blue,
       unselectedItemColor: Colors.grey,
-      onTap: onItemTapped,
-    ); 
-  } 
-} 
+      onTap: (index) => navigationService.navigateToPage(context, index),
+    );
+  }
+}

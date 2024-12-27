@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../services/auth_service.dart';
-import '../home_page.dart';
+import '../navbar/home_page.dart';
 import 'signup_page.dart';
 
 class SignInPage extends StatefulWidget {
