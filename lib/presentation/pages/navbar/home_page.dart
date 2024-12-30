@@ -1,9 +1,14 @@
+import 'dart:io';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:my_app2/presentation/components/custom_navbar.dart';
-import '../auth/signin_page.dart';
+import '../../../models/app_info.dart';
+import '../../../services/installed_apps_service.dart';
 import 'dart:developer' as developer;
-
+import '../../../services/permission_service.dart';
 import '../score/app_list.dart';
+import '../score/privacy_score_detail.dart';
 
 class HomePage extends StatefulWidget {
   final String token;
@@ -15,145 +20,255 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _selectedIndex = 0; 
+  final InstalledAppsService _appsService = InstalledAppsService();
+  final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+  final PermissionService _permissionService = PermissionService();
 
   @override
   void initState() {
     super.initState();
-    developer.log('initState called', name: 'HomePage');
-    developer.log('Auth Token: ${widget.token}', name: 'HomePage');
-  } 
+    _checkPermissions();
+  }
 
-  void _onNavItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-    developer.log('Navigation item tapped: $index', name: 'HomePage');
-  } //
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    developer.log('didChangeDependencies called', name: 'HomePage');
+  Future<void> _checkPermissions() async {
+    await _permissionService.checkGoogleMapsDataAccess();
   }
 
   @override
-  void didUpdateWidget(HomePage oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    developer.log('didUpdateWidget called', name: 'HomePage');
-
-    if (oldWidget.token != widget.token) {
-      developer.log('Token changed', name: 'HomePage');
-    }
-  }
-
-  @override
-  void dispose() {
-    
-    developer.log('dispose called', name: 'HomePage');
-    super.dispose();
-  }
-
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    backgroundColor: Colors.white,
-    body: SafeArea(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.notifications_outlined,
-                    color: Colors.blue,
-                    size: 28,
-                  ),
-                  onPressed: () {
-                    developer.log('Notification bell pressed',
-                        name: 'HomePage');
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Notifications'),
-                        duration: Duration(seconds: 1),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    developer.log('Score circle tapped', name: 'HomePage');
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AppList(),
-                      ),
-                    );
-                  },
-                  child: Container(
-                    width: 150,
-                    height: 150,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Colors.red.withOpacity(0.7),
-                        width: 2,
-                      ),
-                    ),
-                    child: const Center(
-                      child: Text(
-                        '650',
-                        style: TextStyle(
-                          fontSize: 40,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+              const SizedBox(height: 20),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(
-                        Icons.shield,
-                        size: 80,
-                        color: Colors.blue.withOpacity(0.7),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        '75%',
+                      Text(
+                        'Hi John,',
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        "Here's your Privacy Score",
+                        style: TextStyle(
+                          fontSize: 20,
                           color: Colors.black87,
                         ),
                       ),
                     ],
                   ),
+                  CircleAvatar(
+                    backgroundColor: Colors.blue[100],
+                    radius: 25,
+                    child: const Icon(
+                      Icons.person,
+                      color: Colors.blue,
+                      size: 30,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 40),
+
+              Center(
+                child: GestureDetector(
+                  onTap: () {},
+                  child: Container(
+                    width: 200,
+                    height: 200,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.2),
+                          spreadRadius: 5,
+                          blurRadius: 7,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                   
+                        const Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              '668',
+                              style: TextStyle(
+                                fontSize: 40,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              '/20',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ),
+                    
+                        CustomPaint(
+                          size: const Size(200, 200),
+                          painter: ScoreIndicatorPainter(),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-                const SizedBox(height: 40),
-              ],
-            ),
+              ),
+              const SizedBox(height: 20),
+
+              Center(
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const PrivacyScoreDetail(),
+                      ),
+                    );
+                  },
+                  style: TextButton.styleFrom(
+                    backgroundColor: Colors.grey[100],
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const [
+                      Text(
+                        'See How You Scored',
+                        style: TextStyle(
+                          color: Colors.black87,
+                          fontSize: 16,
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      Icon(Icons.arrow_forward,
+                          size: 20, color: Colors.black87),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 40),
+            
+              const Text(
+                'Privacy Shield',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 20),
+    
+              Center(
+                child: Column(
+                  children: [
+                    Container(
+                      width: 150,
+                      height: 150,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Colors.green.withOpacity(0.7),
+                            Colors.blue.withOpacity(0.7),
+                          ],
+                        ),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Center(
+                        child: Text(
+                          '75%',
+                          style: TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    TextButton(
+                      onPressed: () {},
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.grey[100],
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: const [
+                          Text(
+                            'What this Means',
+                            style: TextStyle(
+                              color: Colors.black87,
+                              fontSize: 16,
+                            ),
+                          ),
+                          SizedBox(width: 8),
+                          Icon(Icons.arrow_forward,
+                              size: 20, color: Colors.black87),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
-    ),
-    bottomNavigationBar: CustomNavBar(),
-  );
+      bottomNavigationBar: CustomNavBar(),
+    );
+  }
 }
+
+class ScoreIndicatorPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.red.withOpacity(0.7)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 4;
+
+    final rect = Rect.fromCircle(
+      center: Offset(size.width / 2, size.height / 2),
+      radius: size.width / 2 - 10,
+    );
+
+    canvas.drawArc(
+      rect,
+      -3.14 / 2, 
+      2.5, 
+      false,
+      paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
