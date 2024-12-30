@@ -3,6 +3,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:my_app2/presentation/components/custom_navbar.dart';
+import 'package:my_app2/presentation/pages/shield/privacy_shield.dart';
 import '../../../models/app_info.dart';
 import '../../../services/installed_apps_service.dart';
 import 'dart:developer' as developer;
@@ -210,7 +211,12 @@ class _HomePageState extends State<HomePage> {
                     ),
                     const SizedBox(height: 20),
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () {Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => PrivacyShield(),
+                                  ),
+                                );},
                       style: TextButton.styleFrom(
                         backgroundColor: Colors.grey[100],
                         padding: const EdgeInsets.symmetric(
