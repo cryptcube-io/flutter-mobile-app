@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:my_app2/presentation/components/custom_navbar.dart';
+import 'package:my_app2/presentation/pages/score/privacy_toolkit.dart';
+
+import 'faq_screen.dart';
 
 class AppDetail extends StatefulWidget {
   final String appName;
@@ -37,7 +40,6 @@ class _AppDetailState extends State<AppDetail> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                 
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: 20),
                       padding: const EdgeInsets.all(16),
@@ -112,7 +114,6 @@ class _AppDetailState extends State<AppDetail> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                 
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: 20),
                       decoration: BoxDecoration(
@@ -171,7 +172,6 @@ class _AppDetailState extends State<AppDetail> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Row(
@@ -181,7 +181,12 @@ class _AppDetailState extends State<AppDetail> {
                               'FAQs',
                               Icons.help_outline,
                               onTap: () {
-                                
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => FAQScreen(),
+                                  ),
+                                );
                               },
                             ),
                           ),
@@ -191,7 +196,12 @@ class _AppDetailState extends State<AppDetail> {
                               'Privacy Toolkit',
                               Icons.build_outlined,
                               onTap: () {
-                               
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => PrivacyToolkit(),
+                                  ),
+                                );
                               },
                             ),
                           ),
@@ -202,7 +212,7 @@ class _AppDetailState extends State<AppDetail> {
                 ),
               ),
             ),
-             CustomNavBar(),
+            CustomNavBar(),
           ],
         ),
       ),
@@ -232,14 +242,13 @@ class _AppDetailState extends State<AppDetail> {
           size: 16,
           color: Colors.grey,
         ),
-        onTap: () {
-    
-        },
+        onTap: () {},
       ),
     );
   }
 
-  Widget _buildButton(String text, IconData icon, {required VoidCallback onTap}) {
+  Widget _buildButton(String text, IconData icon,
+      {required VoidCallback onTap}) {
     return ElevatedButton(
       onPressed: onTap,
       style: ElevatedButton.styleFrom(

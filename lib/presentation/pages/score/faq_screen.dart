@@ -95,12 +95,7 @@ class FAQScreen extends StatelessWidget {
                     Center(
                       child: TextButton(
                         onPressed: () {
-                         Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => FAQScreen(),
-                          ),
-                        );
+                         
                         },
                         style: TextButton.styleFrom(
                           backgroundColor: Colors.grey[100],
