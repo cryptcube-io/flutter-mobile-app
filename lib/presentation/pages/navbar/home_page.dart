@@ -4,9 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:my_app2/presentation/components/custom_navbar.dart';
 import 'package:my_app2/presentation/pages/shield/privacy_shield.dart';
+import 'package:my_app2/services/location_checker.dart';
+import '../../../icons/home_page_shield.dart';
 import '../../../models/app_info.dart';
 import '../../../services/installed_apps_service.dart';
 import 'dart:developer' as developer;
+import '../../../services/permission_checker.dart';
 import '../../../services/permission_service.dart';
 import '../score/app_list.dart';
 import '../score/privacy_score_detail.dart';
@@ -32,7 +35,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _checkPermissions() async {
-    await _permissionService.checkGoogleMapsDataAccess();
+    LocationPermissionChecker.printLocationApps();
+    await PermissionChecker.printPermissionStatus('camera');
+    await PermissionChecker.printPermissionStatus('microphone');
+    await PermissionChecker.printPermissionStatus('storage');
+    // await _permissionService.checkGoogleMapsDataAccess();
   }
 
   @override
@@ -46,7 +53,6 @@ class _HomePageState extends State<HomePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 20),
-
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -81,7 +87,6 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
               const SizedBox(height: 40),
-
               Center(
                 child: GestureDetector(
                   onTap: () {},
@@ -103,7 +108,6 @@ class _HomePageState extends State<HomePage> {
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
-                   
                         const Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -123,7 +127,6 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ],
                         ),
-                    
                         CustomPaint(
                           size: const Size(200, 200),
                           painter: ScoreIndicatorPainter(),
@@ -134,7 +137,6 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               const SizedBox(height: 20),
-
               Center(
                 child: TextButton(
                   onPressed: () {
@@ -171,7 +173,6 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               const SizedBox(height: 40),
-            
               const Text(
                 'Privacy Shield',
                 style: TextStyle(
@@ -180,43 +181,46 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               const SizedBox(height: 20),
-    
               Center(
                 child: Column(
                   children: [
                     Container(
                       width: 150,
                       height: 150,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            Colors.green.withOpacity(0.7),
-                            Colors.blue.withOpacity(0.7),
+                      child: ShaderMask(
+                        shaderCallback: (Rect bounds) {
+                          return LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              Colors.green.withOpacity(0.7),
+                              Colors.blue.withOpacity(0.7),
+                            ],
+                          ).createShader(bounds);
+                        },
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            PercentageShieldIcon(
+                              percentage: 50,
+                              color: Colors.white,
+                              size: 150,
+                            ),
+                            
                           ],
-                        ),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Center(
-                        child: Text(
-                          '75%',
-                          style: TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
                         ),
                       ),
                     ),
                     const SizedBox(height: 20),
                     TextButton(
-                      onPressed: () {Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => PrivacyShield(),
-                                  ),
-                                );},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PrivacyShield(),
+                          ),
+                        );
+                      },
                       style: TextButton.styleFrom(
                         backgroundColor: Colors.grey[100],
                         padding: const EdgeInsets.symmetric(
@@ -268,8 +272,8 @@ class ScoreIndicatorPainter extends CustomPainter {
 
     canvas.drawArc(
       rect,
-      -3.14 / 2, 
-      2.5, 
+      -3.14 / 2,
+      2.5,
       false,
       paint,
     );
