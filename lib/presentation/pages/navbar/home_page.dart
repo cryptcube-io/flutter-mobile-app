@@ -35,10 +35,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _checkPermissions() async {
-    LocationPermissionChecker.printLocationApps();
-    await PermissionChecker.printPermissionStatus('camera');
-    await PermissionChecker.printPermissionStatus('microphone');
-    await PermissionChecker.printPermissionStatus('storage');
+    _appsService.getInstalledAppsWithUsage();
+
+    // LocationPermissionChecker.printLocationApps();
+    // await PermissionChecker.printPermissionStatus('camera');
+    // await PermissionChecker.printPermissionStatus('microphone');
+    // await PermissionChecker.printPermissionStatus('storage');
     // await _permissionService.checkGoogleMapsDataAccess();
   }
 
