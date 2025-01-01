@@ -6,6 +6,7 @@ import 'package:my_app2/presentation/components/custom_navbar.dart';
 import 'package:my_app2/presentation/pages/shield/privacy_shield.dart';
 import 'package:my_app2/services/location_checker.dart';
 import '../../../icons/home_page_shield.dart';
+import '../../../icons/privacy_score_gauge.dart';
 import '../../../models/app_info.dart';
 import '../../../services/installed_apps_service.dart';
 import 'dart:developer' as developer;
@@ -108,31 +109,23 @@ class _HomePageState extends State<HomePage> {
                       ],
                     ),
                     child: Stack(
-                      alignment: Alignment.center,
+                      clipBehavior: Clip.none, // This allows child to overflow
                       children: [
-                        const Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              '668',
-                              style: TextStyle(
-                                fontSize: 40,
-                                fontWeight: FontWeight.bold,
-                              ),
+                        
+                        Positioned(
+                          left:
+                              -20, // Adjust these values to position the outer circle
+                          right: -20,
+                          top: -20,
+                          bottom: -20,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white.withOpacity(0.4),
                             ),
-                            Text(
-                              '/20',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
-                        CustomPaint(
-                          size: const Size(200, 200),
-                          painter: ScoreIndicatorPainter(),
-                        ),
+                        SimpleRadialGauge(value: 400),
                       ],
                     ),
                   ),
@@ -208,7 +201,6 @@ class _HomePageState extends State<HomePage> {
                               color: Colors.white,
                               size: 150,
                             ),
-                            
                           ],
                         ),
                       ),
