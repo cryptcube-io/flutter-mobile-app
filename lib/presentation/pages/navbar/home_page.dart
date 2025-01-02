@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:my_app2/presentation/components/custom_navbar.dart';
 import 'package:my_app2/presentation/pages/shield/privacy_shield.dart';
+import 'package:my_app2/services/app_permission_checker.dart';
 import 'package:my_app2/services/location_checker.dart';
 import '../../../icons/home_page_shield.dart';
 import '../../../icons/privacy_score_gauge.dart';
@@ -28,7 +29,7 @@ class _HomePageState extends State<HomePage> {
   final InstalledAppsService _appsService = InstalledAppsService();
   final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
   final PermissionService _permissionService = PermissionService();
-
+  final AppPermissionChecker appPermissionChecker = AppPermissionChecker();
   @override
   void initState() {
     super.initState();
@@ -36,14 +37,20 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _checkPermissions() async {
-    _appsService.getInstalledAppsWithUsage();
-
-    // LocationPermissionChecker.printLocationApps();
-    // await PermissionChecker.printPermissionStatus('camera');
-    // await PermissionChecker.printPermissionStatus('microphone');
-    // await PermissionChecker.printPermissionStatus('storage');
-    // await _permissionService.checkGoogleMapsDataAccess();
+  try {
+    print("\nChecking permissions for Messages app...");
+    final permissions = await AppPermissionChecker.getAppPermissions("com.google.android.googlequicksearchbox");
+    
+    print('\nPermission check results:');
+    print('------------------------');
+    permissions.forEach((permission, status) {
+      print('$permission: $status');
+    });
+  } catch (e) {
+    print('Error checking permissions: $e');
+    print('Stack trace: ${StackTrace.current}');
   }
+}
 
   @override
   Widget build(BuildContext context) {
