@@ -25,16 +25,16 @@ class NavigationService {
     Widget page;
 
     switch (index) {
-      case 0:
+      case 1:
         page = const HomePage(token: "ddasnjk",);
         break;
-      case 1:
+      case 3:
         page = const FolderPage();
         break;
       case 2:
         page = ChatPage();
         break;
-      case 3:
+      case 5:
         page = const PeoplePage();
         break;
       case 4:

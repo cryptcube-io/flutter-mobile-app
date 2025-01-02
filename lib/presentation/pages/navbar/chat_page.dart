@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
+import '../../components/custom_navbar.dart';
 
-class ChatPage extends StatelessWidget {
+class ChatPage extends StatefulWidget {
+  const ChatPage({super.key});
+
+  @override
+  State<ChatPage> createState() => _ChatPageState();
+}
+
+class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -90,78 +98,41 @@ class ChatPage extends StatelessWidget {
                   top: BorderSide(color: Colors.grey[300]!),
                 ),
               ),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.all(8),
-                    child: Row(
-                      children: [
-                        Icon(Icons.attach_file, color: Colors.grey),
-                        SizedBox(width: 8),
-                        Expanded(
-                          child: Container(
-                            height: 40,
-                            padding: EdgeInsets.symmetric(horizontal: 16),
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey[300]!),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: TextField(
-                              decoration: InputDecoration(
-                                hintText: 'Enter Text',
-                                border: InputBorder.none,
-                                contentPadding: EdgeInsets.zero,
-                              ),
-                            ),
+              child: Padding(
+                padding: EdgeInsets.all(8),
+                child: Row(
+                  children: [
+                    Icon(Icons.attach_file, color: Colors.grey),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: Container(
+                        height: 40,
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey[300]!),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: TextField(
+                          decoration: InputDecoration(
+                            hintText: 'Enter Text',
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.zero,
                           ),
                         ),
-                        SizedBox(width: 8),
-                        Icon(Icons.mic, color: Colors.grey),
-                        SizedBox(width: 8),
-                        Icon(Icons.send, color: Colors.grey),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.symmetric(vertical: 8),
-                    decoration: BoxDecoration(
-                      border: Border(
-                        top: BorderSide(color: Colors.grey[300]!),
                       ),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        _buildNavItem(Icons.menu, 'Menu'),
-                        _buildNavItem(Icons.home, 'Home'),
-                        _buildNavItem(Icons.chat_bubble_outline, 'Chat'),
-                        _buildNavItem(Icons.star_border, 'Credits'),
-                        _buildNavItem(Icons.person_outline, 'You'),
-                      ],
-                    ),
-                  ),
-                ],
+                    SizedBox(width: 8),
+                    Icon(Icons.mic, color: Colors.grey),
+                    SizedBox(width: 8),
+                    Icon(Icons.send, color: Colors.grey),
+                  ],
+                ),
               ),
             ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, String label) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, color: Colors.grey),
-        Text(
-          label,
-          style: TextStyle(
-            color: Colors.grey,
-            fontSize: 12,
-          ),
-        ),
-      ],
+      bottomNavigationBar: CustomNavBar(),
     );
   }
 }
