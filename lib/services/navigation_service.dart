@@ -32,7 +32,7 @@ class NavigationService {
         page = const FolderPage();
         break;
       case 2:
-        page = const ChatPage();
+        page = ChatPage();
         break;
       case 3:
         page = const PeoplePage();
