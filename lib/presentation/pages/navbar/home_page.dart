@@ -5,14 +5,12 @@ import 'package:flutter/services.dart';
 import 'package:my_app2/presentation/components/custom_navbar.dart';
 import 'package:my_app2/presentation/pages/shield/privacy_shield.dart';
 import 'package:my_app2/services/app_permission_checker.dart';
-import 'package:my_app2/services/location_checker.dart';
 import '../../../icons/home_page_shield.dart';
 import '../../../icons/privacy_score_gauge.dart';
 import '../../../models/app_info.dart';
 import '../../../services/installed_apps_service.dart';
 import 'dart:developer' as developer;
-import '../../../services/permission_checker.dart';
-import '../../../services/permission_service.dart';
+
 import '../score/app_list.dart';
 import '../score/privacy_score_detail.dart';
 
@@ -28,24 +26,19 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final InstalledAppsService _appsService = InstalledAppsService();
   final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-  final PermissionService _permissionService = PermissionService();
+  // final PermissionService _permissionService = PermissionService();
   final AppPermissionChecker appPermissionChecker = AppPermissionChecker();
   @override
   void initState() {
     super.initState();
     _checkPermissions();
-  }
+
+  }    
+
 
   Future<void> _checkPermissions() async {
   try {
-    print("\nChecking permissions for Messages app...");
-    final permissions = await AppPermissionChecker.getAppPermissions("com.google.android.googlequicksearchbox");
-    
-    print('\nPermission check results:');
-    print('------------------------');
-    permissions.forEach((permission, status) {
-      print('$permission: $status');
-    });
+    AppPermissionChecker.printStructuredPermissions("com.google.android.gm");
   } catch (e) {
     print('Error checking permissions: $e');
     print('Stack trace: ${StackTrace.current}');
