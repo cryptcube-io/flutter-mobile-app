@@ -14,6 +14,7 @@ import android.provider.Settings
 import android.os.Process
 import android.content.pm.PackageInfo
 import android.annotation.SuppressLint
+import android.os.Build
 
 enum class PermissionType {
     LOCATION_GPS,
@@ -29,6 +30,12 @@ enum class PermissionType {
     NETWORK,
     USER_BEHAVIOR,
     FINANCIAL,
+    CALENDAR,
+    MEDIA,
+    NOTIFICATIONS,
+    APP_MANAGEMENT,
+    ACCOUNTS,
+    GOOGLE_SERVICES,
     OTHER
 }
 
@@ -70,6 +77,28 @@ class MainActivity: FlutterActivity() {
             }
         }
 
+        if (permission == android.Manifest.permission.CAMERA) {
+            val granted = checkPermissionResult(packageName, permission)
+            if (!granted) return "DENIED"
+            
+            val mode = appOps.unsafeCheckOpNoThrow(AppOpsManager.OPSTR_CAMERA, Process.myUid(), packageName)
+            return when (mode) {
+                AppOpsManager.MODE_ALLOWED -> "ALLOW_WHILE_USING"
+                AppOpsManager.MODE_FOREGROUND -> "ALLOW_WHILE_USING"
+                else -> "DENIED"
+            }
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            when (permission) {
+                android.Manifest.permission.READ_MEDIA_IMAGES,
+                android.Manifest.permission.READ_MEDIA_VIDEO,
+                android.Manifest.permission.READ_MEDIA_AUDIO -> {
+                    return if (checkPermissionResult(packageName, permission)) "ALLOWED" else "DENIED"
+                }
+            }
+        }
+
         return if (checkPermissionResult(packageName, permission)) "ALLOWED" else "DENIED"
     }
 
@@ -78,45 +107,28 @@ class MainActivity: FlutterActivity() {
         val packageInfo = packageManager.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS)
         
         val permissionCategories = mapOf(
-            // Location Services - GPS
             "ACCESS_FINE_LOCATION" to PermissionType.LOCATION_GPS,
             "ACCESS_BACKGROUND_LOCATION" to PermissionType.LOCATION_GPS,
             "FOREGROUND_SERVICE" to PermissionType.LOCATION_GPS,
-            
-            // Location Services - WiFi
             "ACCESS_WIFI_STATE" to PermissionType.LOCATION_WIFI,
             "CHANGE_WIFI_STATE" to PermissionType.LOCATION_WIFI,
             "ACCESS_COARSE_LOCATION" to PermissionType.LOCATION_WIFI,
             "INTERNET" to PermissionType.NETWORK,
-            
-            // Bluetooth
             "BLUETOOTH" to PermissionType.LOCATION_BLUETOOTH,
             "BLUETOOTH_ADMIN" to PermissionType.LOCATION_BLUETOOTH,
             "BLUETOOTH_SCAN" to PermissionType.LOCATION_BLUETOOTH,
             "BLUETOOTH_CONNECT" to PermissionType.LOCATION_BLUETOOTH,
             "BLUETOOTH_ADVERTISE" to PermissionType.LOCATION_BLUETOOTH,
-            
-            // Health and Fitness
             "BODY_SENSORS" to PermissionType.HEALTH_FITNESS,
             "ACTIVITY_RECOGNITION" to PermissionType.HEALTH_FITNESS,
-            
-            // Sensors
             "HIGH_SAMPLING_RATE_SENSORS" to PermissionType.SENSORS,
-            
-            // App Usage
             "PACKAGE_USAGE_STATS" to PermissionType.APP_USAGE,
             "GET_APP_OPS_STATS" to PermissionType.APP_USAGE,
-            
-            // Device Info
             "READ_PHONE_STATE" to PermissionType.DEVICE_INFO,
             "BATTERY_STATS" to PermissionType.DEVICE_INFO,
-            
-            // Storage
             "READ_EXTERNAL_STORAGE" to PermissionType.STORAGE,
             "WRITE_EXTERNAL_STORAGE" to PermissionType.STORAGE,
             "MANAGE_EXTERNAL_STORAGE" to PermissionType.STORAGE,
-            
-            // User Behavior
             "READ_HISTORY_BOOKMARKS" to PermissionType.USER_BEHAVIOR,
             "WRITE_HISTORY_BOOKMARKS" to PermissionType.USER_BEHAVIOR,
             "RECORD_AUDIO" to PermissionType.USER_BEHAVIOR,
@@ -124,14 +136,26 @@ class MainActivity: FlutterActivity() {
             "READ_CONTACTS" to PermissionType.USER_BEHAVIOR,
             "READ_SMS" to PermissionType.USER_BEHAVIOR,
             "READ_EMAIL" to PermissionType.USER_BEHAVIOR,
-            
-            // Financial
             "USE_BIOMETRIC" to PermissionType.FINANCIAL,
-            "USE_FINGERPRINT" to PermissionType.FINANCIAL
+            "USE_FINGERPRINT" to PermissionType.FINANCIAL,
+            "READ_CALENDAR" to PermissionType.CALENDAR,
+            "WRITE_CALENDAR" to PermissionType.CALENDAR,
+            "CAMERA" to PermissionType.MEDIA,
+            "READ_MEDIA_IMAGES" to PermissionType.MEDIA,
+            "READ_MEDIA_VIDEO" to PermissionType.MEDIA,
+            "READ_MEDIA_AUDIO" to PermissionType.MEDIA,
+            "POST_NOTIFICATIONS" to PermissionType.NOTIFICATIONS,
+            "REQUEST_INSTALL_PACKAGES" to PermissionType.APP_MANAGEMENT,
+            "GET_ACCOUNTS" to PermissionType.ACCOUNTS,
+            "MANAGE_ACCOUNTS" to PermissionType.ACCOUNTS,
+            "USE_CREDENTIALS" to PermissionType.ACCOUNTS,
+            "READ_GSERVICES" to PermissionType.GOOGLE_SERVICES,
+            "READ_GMAIL" to PermissionType.GOOGLE_SERVICES,
+            "WRITE_GMAIL" to PermissionType.GOOGLE_SERVICES
         )
         
         val requestedPermissions = packageInfo.requestedPermissions
-        println("All requested permissions for $packageName: ${requestedPermissions?.joinToString(", ") ?: "none"}")
+        //println("All requested permissions for $packageName: ${requestedPermissions?.joinToString(", ") ?: "none"}")
         
         if (requestedPermissions != null) {
             for (permission in requestedPermissions) {
@@ -140,12 +164,7 @@ class MainActivity: FlutterActivity() {
                     if (simpleName in permissionCategories.keys) {
                         val category = permissionCategories[simpleName] ?: PermissionType.OTHER
                         val state = getPermissionState(packageName, permission)
-                        
                         permissions[simpleName] = state
-                        
-                        //println("Permission: $permission")
-                        //println("State: $state")
-                        //println("Category: $category")
                     }
                 } catch (e: Exception) {
                     println("Error checking permission $permission: ${e.message}")
@@ -157,7 +176,6 @@ class MainActivity: FlutterActivity() {
         return permissions
     }
 
-    // [Previous usage stats related functions remain the same]
     private fun getAppUsageStats(): Map<String, Long> {
         val usageStatsManager = getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
         val endTime = System.currentTimeMillis()

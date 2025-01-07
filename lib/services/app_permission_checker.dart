@@ -41,9 +41,7 @@ class AppPermissionChecker {
         "Health Data": {
           "BODY_SENSORS": {"status": NOT_REQUESTED},
           "ACTIVITY_RECOGNITION": {"status": NOT_REQUESTED},
-          "com.google.android.gms.permission.ACTIVITY_RECOGNITION": {
-            "status": NOT_REQUESTED
-          },
+          "com.google.android.gms.permission.ACTIVITY_RECOGNITION": {"status": NOT_REQUESTED},
           "FOREGROUND_SERVICE": {"status": NOT_REQUESTED}
         }
       },
@@ -109,6 +107,44 @@ class AppPermissionChecker {
           "INTERNET": {"status": NOT_REQUESTED},
           "USE_BIOMETRIC": {"status": NOT_REQUESTED},
           "USE_FINGERPRINT": {"status": NOT_REQUESTED}
+        }
+      },
+      "Calendar Access": {
+        "Calendar": {
+          "READ_CALENDAR": {"status": NOT_REQUESTED},
+          "WRITE_CALENDAR": {"status": NOT_REQUESTED}
+        }
+      },
+      "Media Access": {
+        "Camera and Media": {
+          "CAMERA": {"status": NOT_REQUESTED},
+          "READ_MEDIA_IMAGES": {"status": NOT_REQUESTED},
+          "READ_MEDIA_VIDEO": {"status": NOT_REQUESTED},
+          "READ_MEDIA_AUDIO": {"status": NOT_REQUESTED}
+        }
+      },
+      "App Management": {
+        "Notifications": {
+          "POST_NOTIFICATIONS": {"status": NOT_REQUESTED}
+        },
+        "Updates": {
+          "REQUEST_INSTALL_PACKAGES": {"status": NOT_REQUESTED}
+        }
+      },
+      "Account Access": {
+        "Accounts": {
+          "GET_ACCOUNTS": {"status": NOT_REQUESTED},
+          "MANAGE_ACCOUNTS": {"status": NOT_REQUESTED},
+          "USE_CREDENTIALS": {"status": NOT_REQUESTED}
+        }
+      },
+      "Google Services": {
+        "Gmail": {
+          "READ_GMAIL": {"status": NOT_REQUESTED},
+          "WRITE_GMAIL": {"status": NOT_REQUESTED}
+        },
+        "Google Services": {
+          "READ_GSERVICES": {"status": NOT_REQUESTED}
         }
       }
     }
