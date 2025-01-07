@@ -131,6 +131,7 @@ class MainActivity: FlutterActivity() {
         )
         
         val requestedPermissions = packageInfo.requestedPermissions
+        println("All requested permissions for $packageName: ${requestedPermissions?.joinToString(", ") ?: "none"}")
         
         if (requestedPermissions != null) {
             for (permission in requestedPermissions) {
@@ -142,9 +143,9 @@ class MainActivity: FlutterActivity() {
                         
                         permissions[simpleName] = state
                         
-                        println("Permission: $permission")
-                        println("State: $state")
-                        println("Category: $category")
+                        //println("Permission: $permission")
+                        //println("State: $state")
+                        //println("Category: $category")
                     }
                 } catch (e: Exception) {
                     println("Error checking permission $permission: ${e.message}")

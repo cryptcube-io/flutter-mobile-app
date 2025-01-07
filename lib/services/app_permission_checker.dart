@@ -1,120 +1,120 @@
-// lib/utils/permission_checker.dart
 import 'package:flutter/services.dart';
 import 'dart:convert';
 
 class AppPermissionChecker {
   static const _channel = MethodChannel('app_permissions');
+  static const String NOT_REQUESTED = "NOT_REQUESTED";
 
   static final Map<String, dynamic> permissionStructure = {
     "app_name": {
       "Location Services": {
         "GPS Data": {
-          "ACCESS_FINE_LOCATION": {"status": ""},
-          "ACCESS_BACKGROUND_LOCATION": {"status": ""},
-          "FOREGROUND_SERVICE": {"status": ""}
+          "ACCESS_FINE_LOCATION": {"status": NOT_REQUESTED},
+          "ACCESS_BACKGROUND_LOCATION": {"status": NOT_REQUESTED},
+          "FOREGROUND_SERVICE": {"status": NOT_REQUESTED}
         },
         "Wi-Fi Data": {
-          "ACCESS_WIFI_STATE": {"status": ""},
-          "CHANGE_WIFI_STATE": {"status": ""},
-          "ACCESS_COARSE_LOCATION": {"status": ""},
-          "INTERNET": {"status": ""}
+          "ACCESS_WIFI_STATE": {"status": NOT_REQUESTED},
+          "CHANGE_WIFI_STATE": {"status": NOT_REQUESTED},
+          "ACCESS_COARSE_LOCATION": {"status": NOT_REQUESTED},
+          "INTERNET": {"status": NOT_REQUESTED}
         },
         "Cellular Network Data": {
-          "ACCESS_COARSE_LOCATION": {"status": ""},
-          "ACCESS_NETWORK_STATE": {"status": ""},
-          "INTERNET": {"status": ""}
+          "ACCESS_COARSE_LOCATION": {"status": NOT_REQUESTED},
+          "ACCESS_NETWORK_STATE": {"status": NOT_REQUESTED},
+          "INTERNET": {"status": NOT_REQUESTED}
         },
         "Bluetooth Data": {
-          "BLUETOOTH": {"status": ""},
-          "BLUETOOTH_ADMIN": {"status": ""},
-          "BLUETOOTH_SCAN": {"status": ""},
-          "BLUETOOTH_CONNECT": {"status": ""},
-          "BLUETOOTH_ADVERTISE": {"status": ""}
+          "BLUETOOTH": {"status": NOT_REQUESTED},
+          "BLUETOOTH_ADMIN": {"status": NOT_REQUESTED},
+          "BLUETOOTH_SCAN": {"status": NOT_REQUESTED},
+          "BLUETOOTH_CONNECT": {"status": NOT_REQUESTED},
+          "BLUETOOTH_ADVERTISE": {"status": NOT_REQUESTED}
         },
         "Geofencing Data": {
-          "ACCESS_FINE_LOCATION": {"status": ""},
-          "ACCESS_BACKGROUND_LOCATION": {"status": ""},
-          "FOREGROUND_SERVICE": {"status": ""}
+          "ACCESS_FINE_LOCATION": {"status": NOT_REQUESTED},
+          "ACCESS_BACKGROUND_LOCATION": {"status": NOT_REQUESTED},
+          "FOREGROUND_SERVICE": {"status": NOT_REQUESTED}
         }
       },
       "Health and Fitness Data": {
         "Health Data": {
-          "BODY_SENSORS": {"status": ""},
-          "ACTIVITY_RECOGNITION": {"status": ""},
+          "BODY_SENSORS": {"status": NOT_REQUESTED},
+          "ACTIVITY_RECOGNITION": {"status": NOT_REQUESTED},
           "com.google.android.gms.permission.ACTIVITY_RECOGNITION": {
-            "status": ""
+            "status": NOT_REQUESTED
           },
-          "FOREGROUND_SERVICE": {"status": ""}
+          "FOREGROUND_SERVICE": {"status": NOT_REQUESTED}
         }
       },
       "Sensor Data": {
         "Sensors": {
-          "HIGH_SAMPLING_RATE_SENSORS": {"status": ""},
-          "FOREGROUND_SERVICE": {"status": ""}
+          "HIGH_SAMPLING_RATE_SENSORS": {"status": NOT_REQUESTED},
+          "FOREGROUND_SERVICE": {"status": NOT_REQUESTED}
         }
       },
       "Application Usage Data": {
         "App Usage": {
-          "PACKAGE_USAGE_STATS": {"status": ""},
-          "GET_APP_OPS_STATS": {"status": ""},
-          "INTERNET": {"status": ""},
-          "FOREGROUND_SERVICE": {"status": ""}
+          "PACKAGE_USAGE_STATS": {"status": NOT_REQUESTED},
+          "GET_APP_OPS_STATS": {"status": NOT_REQUESTED},
+          "INTERNET": {"status": NOT_REQUESTED},
+          "FOREGROUND_SERVICE": {"status": NOT_REQUESTED}
         }
       },
       "Device Information": {
         "Device Info": {
-          "READ_PHONE_STATE": {"status": ""}
+          "READ_PHONE_STATE": {"status": NOT_REQUESTED}
         },
         "Battery": {
-          "BATTERY_STATS": {"status": ""}
+          "BATTERY_STATS": {"status": NOT_REQUESTED}
         },
         "Storage": {
-          "READ_EXTERNAL_STORAGE": {"status": ""},
-          "WRITE_EXTERNAL_STORAGE": {"status": ""},
-          "MANAGE_EXTERNAL_STORAGE": {"status": ""}
+          "READ_EXTERNAL_STORAGE": {"status": NOT_REQUESTED},
+          "WRITE_EXTERNAL_STORAGE": {"status": NOT_REQUESTED},
+          "MANAGE_EXTERNAL_STORAGE": {"status": NOT_REQUESTED}
         },
         "Network": {
-          "ACCESS_NETWORK_STATE": {"status": ""},
-          "INTERNET": {"status": ""},
-          "ACCESS_WIFI_STATE": {"status": ""}
+          "ACCESS_NETWORK_STATE": {"status": NOT_REQUESTED},
+          "INTERNET": {"status": NOT_REQUESTED},
+          "ACCESS_WIFI_STATE": {"status": NOT_REQUESTED}
         }
       },
       "User Behavior and Preferences": {
         "Browser History": {
-          "READ_HISTORY_BOOKMARKS": {"status": ""},
-          "WRITE_HISTORY_BOOKMARKS": {"status": ""},
-          "INTERNET": {"status": ""}
+          "READ_HISTORY_BOOKMARKS": {"status": NOT_REQUESTED},
+          "WRITE_HISTORY_BOOKMARKS": {"status": NOT_REQUESTED},
+          "INTERNET": {"status": NOT_REQUESTED}
         },
         "Voice Commands": {
-          "RECORD_AUDIO": {"status": ""},
-          "INTERNET": {"status": ""}
+          "RECORD_AUDIO": {"status": NOT_REQUESTED},
+          "INTERNET": {"status": NOT_REQUESTED}
         },
         "App Store": {
-          "BILLING": {"status": ""},
-          "INTERNET": {"status": ""}
+          "BILLING": {"status": NOT_REQUESTED},
+          "INTERNET": {"status": NOT_REQUESTED}
         },
         "Social Media": {
-          "INTERNET": {"status": ""},
-          "READ_CONTACTS": {"status": ""}
+          "INTERNET": {"status": NOT_REQUESTED},
+          "READ_CONTACTS": {"status": NOT_REQUESTED}
         },
         "Messaging": {
-          "READ_CONTACTS": {"status": ""},
-          "READ_SMS": {"status": ""},
-          "READ_EMAIL": {"status": ""},
-          "INTERNET": {"status": ""}
+          "READ_CONTACTS": {"status": NOT_REQUESTED},
+          "READ_SMS": {"status": NOT_REQUESTED},
+          "READ_EMAIL": {"status": NOT_REQUESTED},
+          "INTERNET": {"status": NOT_REQUESTED}
         }
       },
       "Financial Data": {
         "Financial": {
-          "INTERNET": {"status": ""},
-          "USE_BIOMETRIC": {"status": ""},
-          "USE_FINGERPRINT": {"status": ""}
+          "INTERNET": {"status": NOT_REQUESTED},
+          "USE_BIOMETRIC": {"status": NOT_REQUESTED},
+          "USE_FINGERPRINT": {"status": NOT_REQUESTED}
         }
       }
     }
   };
 
-    static Future<Map<String, String>> getAppPermissions(String packageName) async {
+  static Future<Map<String, String>> getAppPermissions(String packageName) async {
     try {
       final Map<dynamic, dynamic> result = await _channel.invokeMethod('getAppPermissions', {
         'packageName': packageName
@@ -130,10 +130,10 @@ class AppPermissionChecker {
     structure.forEach((key, value) {
       if (value is Map<String, dynamic>) {
         if (value.containsKey('status')) {
-          // This is a permission entry
-          value['status'] = permissions[key] ?? "NOT_REQUESTED";  // Changed here
+          if (permissions.containsKey(key)) {
+            value['status'] = permissions[key];
+          }
         } else {
-          // This is a category or subcategory
           _updateStructure(value, permissions);
         }
       }
@@ -144,17 +144,25 @@ class AppPermissionChecker {
     try {
       final permissions = await getAppPermissions(packageName);
       
-      // Create a deep copy of the structure
+      print('BEGIN RAW PERMISSIONS');
+      print('Package: $packageName');
+      permissions.forEach((key, value) {
+        print('$key: $value');
+      });
+      print('END RAW PERMISSIONS\n');
+      
       final Map<String, dynamic> result = json.decode(json.encode(permissionStructure));
       
-      // Update the statuses
       _updateStructure(result, permissions);
       
-      // Print formatted JSON
+      print('BEGIN STRUCTURED PERMISSIONS');
       final prettyJson = JsonEncoder.withIndent('  ').convert(result);
-      print('BEGIN PERMISSIONS OUTPUT');
-      print(prettyJson);
-      print('END PERMISSIONS OUTPUT');
+      const int chunkSize = 800;
+      for (var i = 0; i < prettyJson.length; i += chunkSize) {
+        var end = (i + chunkSize < prettyJson.length) ? i + chunkSize : prettyJson.length;
+        print(prettyJson.substring(i, end));
+      }
+      print('END STRUCTURED PERMISSIONS');
       
     } catch (e) {
       print('Error: $e');
