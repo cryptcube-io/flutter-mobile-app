@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-
 import '../../components/custom_navbar.dart';
+import '../navbar/chat_page.dart';
 
 class FAQScreen extends StatelessWidget {
-  const FAQScreen({super.key});
+  final String appName;
+  const FAQScreen({super.key, required this.appName});
 
   @override
   Widget build(BuildContext context) {
@@ -21,9 +22,9 @@ class FAQScreen extends StatelessWidget {
                       padding: const EdgeInsets.all(20),
                       child: Row(
                         children: [
-                          const Text(
-                            'FAQs',
-                            style: TextStyle(
+                          Text(
+                            'FAQs - $appName',
+                            style: const TextStyle(
                               fontSize: 28,
                               fontWeight: FontWeight.bold,
                             ),
@@ -96,7 +97,12 @@ class FAQScreen extends StatelessWidget {
                     Center(
                       child: TextButton(
                         onPressed: () {
-                         
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ChatPage(appName: appName),
+                            ),
+                          );
                         },
                         style: TextButton.styleFrom(
                           backgroundColor: Colors.grey[100],
@@ -133,7 +139,7 @@ class FAQScreen extends StatelessWidget {
                 ),
               ),
             ),
-             CustomNavBar(),
+            CustomNavBar(),
           ],
         ),
       ),

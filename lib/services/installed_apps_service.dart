@@ -4,7 +4,7 @@ import 'dart:convert';
 import '../models/app_info.dart';
 
 class InstalledAppsService {
-  static const platform = MethodChannel('com.example.app/installed_apps');
+  static const platform = MethodChannel('com.example.Cryptcube_mobile_app/installed_apps');
 
   Future<List<AppInfo>> getInstalledAppsWithUsage() async {
     try {

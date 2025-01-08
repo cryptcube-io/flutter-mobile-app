@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-
-
 import '../../components/custom_navbar.dart';
 import 'faq_screen.dart';
 import 'privacy_toolkit.dart';
@@ -185,7 +183,7 @@ class _AppDetailState extends State<AppDetail> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => FAQScreen(),
+                                    builder: (context) => FAQScreen(appName: widget.appName),
                                   ),
                                 );
                               },
@@ -248,8 +246,7 @@ class _AppDetailState extends State<AppDetail> {
     );
   }
 
-  Widget _buildButton(String text, IconData icon,
-      {required VoidCallback onTap}) {
+  Widget _buildButton(String text, IconData icon, {required VoidCallback onTap}) {
     return ElevatedButton(
       onPressed: onTap,
       style: ElevatedButton.styleFrom(

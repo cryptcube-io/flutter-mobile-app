@@ -32,7 +32,7 @@ class NavigationService {
         page = const FolderPage();
         break;
       case 2:
-        page = ChatPage();
+        page = ChatPage(appName:"Reddit");
         break;
       case 5:
         page = const PeoplePage();

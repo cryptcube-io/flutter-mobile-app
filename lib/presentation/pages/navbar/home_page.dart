@@ -39,7 +39,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _checkPermissions() async {
   try {
-    _appsService.getInstalledAppsWithUsage();
+    // _appsService.getInstalledAppsWithUsage();
     // AppPermissionChecker.printStructuredPermissions("com.chase.sig.android");
   } catch (e) {
     print('Error checking permissions: $e');

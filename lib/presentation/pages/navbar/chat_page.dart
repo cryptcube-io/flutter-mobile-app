@@ -5,7 +5,8 @@ import '../../components/custom_navbar.dart';
 import 'dart:convert';
 
 class ChatPage extends StatefulWidget {
-  const ChatPage({super.key});
+  final String appName;
+  const ChatPage({super.key, required this.appName});
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -36,16 +37,12 @@ class _ChatPageState extends State<ChatPage> {
 
   Future<String?> _getPrivacyResponse(String question) async {
     try {
-      print('\n=== API Request Details ===');
-      print('Question: $question');
-      print('Token Status: ${_token != null ? 'Present' : 'Missing'}');
-
       if (_token == null) return 'Please sign in first';
 
       final response = await _dio.get(
         'https://privacydoctor.cryptcube.io/api/privacyConverse',
         queryParameters: {
-          'appName': 'Strava',
+          'appName': widget.appName,
           'question': question,
           'documentType': 'txt'
         },
@@ -55,12 +52,7 @@ class _ChatPageState extends State<ChatPage> {
         ),
       );
 
-      print('\n=== API Response Details ===');
-      print('Status Code: ${response.statusCode}');
-      print('Raw Response Data: ${response.data}');
-
       if (response.data != null && response.data['response'] != null) {
-        print('\n=== Processing Response ===');
         final responseStr = response.data['response'] as String;
 
         final startIndex = responseStr.indexOf("response='") + 10;
@@ -89,7 +81,6 @@ class _ChatPageState extends State<ChatPage> {
                     }
                   }
                 }
-
                 return answer;
               }
             } catch (e) {
@@ -98,10 +89,8 @@ class _ChatPageState extends State<ChatPage> {
           }
         }
       }
-
       return 'No response data';
     } catch (e) {
-      print('Error: $e');
       return 'Connection error: $e';
     }
   }
@@ -239,7 +228,7 @@ class _ChatPageState extends State<ChatPage> {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  'Privacy Doc',
+                  widget.appName,
                   style: TextStyle(
                     color: Colors.black87,
                     fontSize: 16,
@@ -255,8 +244,7 @@ class _ChatPageState extends State<ChatPage> {
                   child: Column(
                     children: [
                       ..._messages
-                          .map((message) =>
-                              _buildMessageBubble(message, context))
+                          .map((message) => _buildMessageBubble(message, context))
                           .toList(),
                       if (_isTyping && _currentlyTypingText.isEmpty)
                         _buildTypingIndicator(),
@@ -278,11 +266,9 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  Widget _buildMessageBubble(
-      Map<String, dynamic> message, BuildContext context) {
+  Widget _buildMessageBubble(Map<String, dynamic> message, BuildContext context) {
     return Align(
-      alignment:
-          message['isUser'] ? Alignment.centerRight : Alignment.centerLeft,
+      alignment: message['isUser'] ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
         constraints: BoxConstraints(
           maxWidth: MediaQuery.of(context).size.width * 0.7,
