@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:my_app2/presentation/components/custom_navbar.dart';
+
+import '../../components/custom_navbar.dart';
 
 class PrivacyToolkit extends StatelessWidget {
   const PrivacyToolkit({super.key});

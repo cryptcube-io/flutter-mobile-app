@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:my_app2/presentation/components/custom_navbar.dart';
-import 'package:my_app2/presentation/pages/score/privacy_score_factors.dart';
 
+
+import '../../components/custom_navbar.dart';
 import 'app_list.dart';
+import 'privacy_score_factors.dart';
 
 class PrivacyScoreDetail extends StatelessWidget {
   const PrivacyScoreDetail({super.key});

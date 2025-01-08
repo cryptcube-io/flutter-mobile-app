@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:my_app2/presentation/components/custom_navbar.dart';
-import 'package:my_app2/presentation/pages/score/privacy_toolkit.dart';
 
+
+import '../../components/custom_navbar.dart';
 import 'faq_screen.dart';
+import 'privacy_toolkit.dart';
 
 class AppDetail extends StatefulWidget {
   final String appName;

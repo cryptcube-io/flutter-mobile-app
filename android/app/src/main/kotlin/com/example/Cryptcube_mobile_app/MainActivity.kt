@@ -1,4 +1,4 @@
-package com.example.my_app2
+package com.example.Cryptcube_mobile_app
 
 import android.content.Context
 import android.app.usage.UsageStatsManager
@@ -41,7 +41,7 @@ enum class PermissionType {
 }
 
 class MainActivity: FlutterActivity() {
-    private val APPS_CHANNEL = "com.example.app/installed_apps"
+    private val APPS_CHANNEL = "com.example.Cryptcube_mobile_app/installed_apps"
     private val PERMISSIONS_CHANNEL = "app_permissions"
 
     private fun checkPermissionResult(packageName: String, permission: String): Boolean {

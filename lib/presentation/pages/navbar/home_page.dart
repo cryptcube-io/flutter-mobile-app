@@ -2,17 +2,18 @@ import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:my_app2/presentation/components/custom_navbar.dart';
-import 'package:my_app2/presentation/pages/shield/privacy_shield.dart';
-import 'package:my_app2/services/app_permission_checker.dart';
+
 import '../../../icons/home_page_shield.dart';
 import '../../../icons/privacy_score_gauge.dart';
 import '../../../models/app_info.dart';
+import '../../../services/app_permission_checker.dart';
 import '../../../services/installed_apps_service.dart';
 import 'dart:developer' as developer;
 
+import '../../components/custom_navbar.dart';
 import '../score/app_list.dart';
 import '../score/privacy_score_detail.dart';
+import '../shield/privacy_shield.dart';
 
 class HomePage extends StatefulWidget {
   final String token;

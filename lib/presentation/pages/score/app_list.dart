@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:my_app2/presentation/components/custom_navbar.dart';
 import 'dart:math';
 import '../../../services/installed_apps_service.dart';
+import '../../components/custom_navbar.dart';
 import 'app_detail.dart';
 
 class AppItem {

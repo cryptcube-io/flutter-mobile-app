@@ -45,12 +45,12 @@
 
 
     <application
-        android:label="my_app2"
+        android:label="Cryptcube_mobile_app"
         android:name="${applicationName}"
         android:enableOnBackInvokedCallback="true"
         android:icon="@mipmap/ic_launcher">
         <activity
-            android:name=".MainActivity"
+            android:name="com.example.Cryptcube_mobile_app.MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
             android:taskAffinity=""
