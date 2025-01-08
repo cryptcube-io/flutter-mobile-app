@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
 import 'dart:developer' as developer;
+import 'dart:convert';
 import '../models/app_info.dart';
 
 class InstalledAppsService {
@@ -8,21 +9,26 @@ class InstalledAppsService {
   Future<List<AppInfo>> getInstalledAppsWithUsage() async {
     try {
       final List<dynamic> apps = await platform.invokeMethod('getInstalledAppsWithUsage');
+      
       final List<AppInfo> appList = apps
           .map((app) => AppInfo.fromMap(app as Map<Object?, Object?>))
+          .where((app) => app.usageTime.inMilliseconds > 0)
           .toList();
-      
-      // Sort by usage time
+
       appList.sort((a, b) => b.usageTime.compareTo(a.usageTime));
-      
-      // Log apps and their usage
-      for (var app in appList) {
-        print('${app.toString()}');
-      }
-      
+
+      final jsonList = appList.map((app) => app.toMap()).toList();
+      developer.log(json.encode(jsonList), name: 'AppUsage');
+
       return appList;
     } on PlatformException catch (e) {
-      print('Error: ${e.message}');
+      if (e.code == 'PERMISSION_DENIED') {
+        developer.log('Usage stats permission required', name: 'AppUsage');
+      }
+      developer.log('Error: ${e.message}', name: 'AppUsage', error: e);
+      return [];
+    } catch (e) {
+      developer.log('Unexpected error: $e', name: 'AppUsage', error: e);
       return [];
     }
   }

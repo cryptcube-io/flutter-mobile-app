@@ -17,10 +17,18 @@ class AppInfo {
     );
   }
 
+  Map<String, dynamic> toMap() {
+    return {
+      'packageName': packageName,
+      'appName': appName,
+      'usageTime': usageTime.inMilliseconds,
+    };
+  }
+
   @override
   String toString() {
     final hours = usageTime.inHours;
-    final minutes = usageTime.inMinutes % 60;
+    final minutes = usageTime.inMinutes.remainder(60);
     return '$appName (${hours}h ${minutes}m total usage)';
   }
 }
