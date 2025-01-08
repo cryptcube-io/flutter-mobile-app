@@ -37,6 +37,11 @@ class _ChatPageState extends State<ChatPage> {
 
   Future<String?> _getPrivacyResponse(String question) async {
     try {
+      print('\n=== Request Details ===');
+      print('Question: $question');
+      print('App Name: ${widget.appName}');
+      print('Token Status: ${_token != null ? 'Present' : 'Missing'}');
+
       if (_token == null) return 'Please sign in first';
 
       final response = await _dio.get(
@@ -52,9 +57,13 @@ class _ChatPageState extends State<ChatPage> {
         ),
       );
 
+      print('\n=== Response Details ===');
+      print('Status Code: ${response.statusCode}');
+
       if (response.data != null && response.data['response'] != null) {
         final responseStr = response.data['response'] as String;
 
+        // Extract everything between response=' and the last '}
         final startIndex = responseStr.indexOf("response='") + 10;
         final endIndex = responseStr.lastIndexOf("'}");
 
@@ -63,34 +72,44 @@ class _ChatPageState extends State<ChatPage> {
           final responseJson = json.decode(jsonStr);
 
           if (responseJson['inferenceResponse'] != null) {
-            final inferenceStr = responseJson['inferenceResponse'].toString();
+            String inferenceStr = responseJson['inferenceResponse'].toString();
 
             try {
-              final inferenceJson = json.decode(inferenceStr);
-              if (inferenceJson['payload'] != null &&
-                  inferenceJson['payload']['answer'] != null) {
-                String answer = inferenceJson['payload']['answer'].toString();
+              // Try to find the answer in the cleaned string
+              if (inferenceStr.contains('"answer"')) {
+                final answerStart = inferenceStr.indexOf('"answer"') + 9;
+                String answer = inferenceStr.substring(answerStart);
 
-                int answerIndex = answer.indexOf("answer");
-                if (answerIndex != -1) {
-                  int colonIndex = answer.indexOf(":", answerIndex);
-                  if (colonIndex != -1) {
-                    int quoteIndex = answer.indexOf('"', colonIndex);
-                    if (quoteIndex != -1) {
-                      return answer.substring(quoteIndex + 1);
-                    }
-                  }
+                // Clean up the answer
+                answer = answer
+                    .replaceAll('"', '')
+                    .replaceAll('{', '')
+                    .replaceAll('}', '')
+                    .replaceAll('\\n', ' ')
+                    .trim();
+
+                // Remove any residual JSON syntax
+                if (answer.endsWith('} }')) {
+                  answer = answer.substring(0, answer.length - 4).trim();
                 }
+
+                print('\n=== Final Processed Answer ===');
+                print(answer);
                 return answer;
               }
-            } catch (e) {
               return inferenceStr;
+            } catch (e) {
+              print('\n=== Processing Error ===');
+              print('Error processing answer: $e');
+              return inferenceStr.replaceAll('"', '').trim();
             }
           }
         }
       }
-      return 'No response data';
+      return 'Could not process the response';
     } catch (e) {
+      print('\n=== Error ===');
+      print('Exception occurred: $e');
       return 'Connection error: $e';
     }
   }
@@ -244,7 +263,8 @@ class _ChatPageState extends State<ChatPage> {
                   child: Column(
                     children: [
                       ..._messages
-                          .map((message) => _buildMessageBubble(message, context))
+                          .map((message) =>
+                              _buildMessageBubble(message, context))
                           .toList(),
                       if (_isTyping && _currentlyTypingText.isEmpty)
                         _buildTypingIndicator(),
@@ -266,9 +286,11 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  Widget _buildMessageBubble(Map<String, dynamic> message, BuildContext context) {
+  Widget _buildMessageBubble(
+      Map<String, dynamic> message, BuildContext context) {
     return Align(
-      alignment: message['isUser'] ? Alignment.centerRight : Alignment.centerLeft,
+      alignment:
+          message['isUser'] ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
         constraints: BoxConstraints(
           maxWidth: MediaQuery.of(context).size.width * 0.7,
