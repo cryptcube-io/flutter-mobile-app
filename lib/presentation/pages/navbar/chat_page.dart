@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../components/custom_navbar.dart';
+import 'dart:convert';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -12,10 +15,96 @@ class _ChatPageState extends State<ChatPage> {
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final List<Map<String, dynamic>> _messages = [];
+  final Dio _dio = Dio();
   bool _isTyping = false;
   String _currentlyTypingText = '';
   int _currentIndex = 0;
-  final String _responseText = "LinkedIn's privacy policy can feel a bit dense, so here's a simpler breakdown of what it generally means:\n\n1. What data they collect:\nLinkedIn gathers information you provide when you sign up (like your name, email, and job details) and when you use the platform (your posts, messages, and job applications).";
+  String? _token;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadToken();
+  }
+
+  Future<void> _loadToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _token = prefs.getString('auth_token');
+    });
+  }
+
+  Future<String?> _getPrivacyResponse(String question) async {
+    try {
+      print('\n=== API Request Details ===');
+      print('Question: $question');
+      print('Token Status: ${_token != null ? 'Present' : 'Missing'}');
+
+      if (_token == null) return 'Please sign in first';
+
+      final response = await _dio.get(
+        'https://privacydoctor.cryptcube.io/api/privacyConverse',
+        queryParameters: {
+          'appName': 'Strava',
+          'question': question,
+          'documentType': 'txt'
+        },
+        options: Options(
+          headers: {'Authorization': 'Bearer $_token'},
+          validateStatus: (status) => true,
+        ),
+      );
+
+      print('\n=== API Response Details ===');
+      print('Status Code: ${response.statusCode}');
+      print('Raw Response Data: ${response.data}');
+
+      if (response.data != null && response.data['response'] != null) {
+        print('\n=== Processing Response ===');
+        final responseStr = response.data['response'] as String;
+
+        final startIndex = responseStr.indexOf("response='") + 10;
+        final endIndex = responseStr.lastIndexOf("'}");
+
+        if (startIndex > 9 && endIndex != -1) {
+          final jsonStr = responseStr.substring(startIndex, endIndex);
+          final responseJson = json.decode(jsonStr);
+
+          if (responseJson['inferenceResponse'] != null) {
+            final inferenceStr = responseJson['inferenceResponse'].toString();
+
+            try {
+              final inferenceJson = json.decode(inferenceStr);
+              if (inferenceJson['payload'] != null &&
+                  inferenceJson['payload']['answer'] != null) {
+                String answer = inferenceJson['payload']['answer'].toString();
+
+                int answerIndex = answer.indexOf("answer");
+                if (answerIndex != -1) {
+                  int colonIndex = answer.indexOf(":", answerIndex);
+                  if (colonIndex != -1) {
+                    int quoteIndex = answer.indexOf('"', colonIndex);
+                    if (quoteIndex != -1) {
+                      return answer.substring(quoteIndex + 1);
+                    }
+                  }
+                }
+
+                return answer;
+              }
+            } catch (e) {
+              return inferenceStr;
+            }
+          }
+        }
+      }
+
+      return 'No response data';
+    } catch (e) {
+      print('Error: $e');
+      return 'Connection error: $e';
+    }
+  }
 
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -29,14 +118,14 @@ class _ChatPageState extends State<ChatPage> {
     });
   }
 
-  void _startTypingResponse() {
+  void _startTypingResponse(String response) {
     _currentlyTypingText = '';
     _currentIndex = 0;
-    
+
     void typeNextCharacter() {
-      if (_currentIndex < _responseText.length) {
+      if (_currentIndex < response.length) {
         setState(() {
-          _currentlyTypingText += _responseText[_currentIndex];
+          _currentlyTypingText += response[_currentIndex];
           _currentIndex++;
         });
         _scrollToBottom();
@@ -44,7 +133,7 @@ class _ChatPageState extends State<ChatPage> {
       } else {
         setState(() {
           _messages.add({
-            'text': _responseText,
+            'text': response,
             'isUser': false,
           });
           _isTyping = false;
@@ -53,11 +142,11 @@ class _ChatPageState extends State<ChatPage> {
         _scrollToBottom();
       }
     }
-    
+
     typeNextCharacter();
   }
 
-  void _handleSubmit(String text) {
+  void _handleSubmit(String text) async {
     if (text.isEmpty) return;
     setState(() {
       _messages.add({
@@ -69,9 +158,19 @@ class _ChatPageState extends State<ChatPage> {
     _textController.clear();
     _scrollToBottom();
 
-    Future.delayed(Duration(seconds: 2), () {
-      _startTypingResponse();
-    });
+    final response = await _getPrivacyResponse(text);
+    if (response != null) {
+      _startTypingResponse(response);
+    } else {
+      setState(() {
+        _isTyping = false;
+        _messages.add({
+          'text': 'Sorry, I encountered an error. Please try again.',
+          'isUser': false,
+        });
+      });
+      _scrollToBottom();
+    }
   }
 
   Widget _buildTypingIndicator() {
@@ -155,125 +254,119 @@ class _ChatPageState extends State<ChatPage> {
                   padding: EdgeInsets.all(16),
                   child: Column(
                     children: [
-                      ..._messages.map((message) => Align(
-                        alignment: message['isUser'] 
-                            ? Alignment.centerRight 
-                            : Alignment.centerLeft,
-                        child: Container(
-                          constraints: BoxConstraints(
-                            maxWidth: MediaQuery.of(context).size.width * 0.7,
-                          ),
-                          padding: EdgeInsets.all(16),
-                          margin: EdgeInsets.only(
-                            bottom: 16,
-                            left: message['isUser'] ? 32 : 0,
-                            right: message['isUser'] ? 0 : 32,
-                          ),
-                          decoration: BoxDecoration(
-                            color: message['isUser'] 
-                                ? Color(0xFF4A4A4A)
-                                : Colors.grey[200],
-                            borderRadius: message['isUser']
-                                ? BorderRadius.only(
-                                    topLeft: Radius.circular(12),
-                                    topRight: Radius.circular(12),
-                                    bottomLeft: Radius.circular(12),
-                                  )
-                                : BorderRadius.only(
-                                    topLeft: Radius.circular(12),
-                                    topRight: Radius.circular(12),
-                                    bottomRight: Radius.circular(12),
-                                  ),
-                          ),
-                          child: Text(
-                            message['text'],
-                            style: TextStyle(
-                              color: message['isUser'] 
-                                  ? Colors.white
-                                  : Colors.black87,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
-                      )).toList(),
-                      if (_isTyping && _currentlyTypingText.isEmpty) _buildTypingIndicator(),
+                      ..._messages
+                          .map((message) =>
+                              _buildMessageBubble(message, context))
+                          .toList(),
+                      if (_isTyping && _currentlyTypingText.isEmpty)
+                        _buildTypingIndicator(),
                       if (_currentlyTypingText.isNotEmpty)
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Container(
-                            constraints: BoxConstraints(
-                              maxWidth: MediaQuery.of(context).size.width * 0.7,
-                            ),
-                            padding: EdgeInsets.all(16),
-                            margin: EdgeInsets.only(right: 32),
-                            decoration: BoxDecoration(
-                              color: Colors.grey[200],
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(12),
-                                topRight: Radius.circular(12),
-                                bottomRight: Radius.circular(12),
-                              ),
-                            ),
-                            child: Text(
-                              _currentlyTypingText,
-                              style: TextStyle(
-                                color: Colors.black87,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ),
-                        ),
+                        _buildMessageBubble({
+                          'text': _currentlyTypingText,
+                          'isUser': false,
+                        }, context),
                     ],
                   ),
                 ),
               ),
             ),
-            Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(color: Colors.grey[300]!),
-                ),
-              ),
-              child: Padding(
-                padding: EdgeInsets.all(8),
-                child: Row(
-                  children: [
-                    Icon(Icons.attach_file, color: Colors.grey),
-                    SizedBox(width: 8),
-                    Expanded(
-                      child: Container(
-                        height: 40,
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey[300]!),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: TextField(
-                          controller: _textController,
-                          onSubmitted: _handleSubmit,
-                          decoration: InputDecoration(
-                            hintText: 'Enter Text',
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.zero,
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 8),
-                    Icon(Icons.mic, color: Colors.grey),
-                    SizedBox(width: 8),
-                    GestureDetector(
-                      onTap: () => _handleSubmit(_textController.text),
-                      child: Icon(Icons.send, color: Colors.grey),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            _buildInputArea(),
           ],
         ),
       ),
       bottomNavigationBar: CustomNavBar(),
     );
+  }
+
+  Widget _buildMessageBubble(
+      Map<String, dynamic> message, BuildContext context) {
+    return Align(
+      alignment:
+          message['isUser'] ? Alignment.centerRight : Alignment.centerLeft,
+      child: Container(
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width * 0.7,
+        ),
+        padding: EdgeInsets.all(16),
+        margin: EdgeInsets.only(
+          bottom: 16,
+          left: message['isUser'] ? 32 : 0,
+          right: message['isUser'] ? 0 : 32,
+        ),
+        decoration: BoxDecoration(
+          color: message['isUser'] ? Color(0xFF4A4A4A) : Colors.grey[200],
+          borderRadius: message['isUser']
+              ? BorderRadius.only(
+                  topLeft: Radius.circular(12),
+                  topRight: Radius.circular(12),
+                  bottomLeft: Radius.circular(12),
+                )
+              : BorderRadius.only(
+                  topLeft: Radius.circular(12),
+                  topRight: Radius.circular(12),
+                  bottomRight: Radius.circular(12),
+                ),
+        ),
+        child: Text(
+          message['text'],
+          style: TextStyle(
+            color: message['isUser'] ? Colors.white : Colors.black87,
+            fontSize: 16,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInputArea() {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(
+          top: BorderSide(color: Colors.grey[300]!),
+        ),
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(8),
+        child: Row(
+          children: [
+            Icon(Icons.attach_file, color: Colors.grey),
+            SizedBox(width: 8),
+            Expanded(
+              child: Container(
+                height: 40,
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey[300]!),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: TextField(
+                  controller: _textController,
+                  onSubmitted: _handleSubmit,
+                  decoration: InputDecoration(
+                    hintText: 'Enter Text',
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(width: 8),
+            Icon(Icons.mic, color: Colors.grey),
+            SizedBox(width: 8),
+            GestureDetector(
+              onTap: () => _handleSubmit(_textController.text),
+              child: Icon(Icons.send, color: Colors.grey),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _textController.dispose();
+    _scrollController.dispose();
+    super.dispose();
   }
 }

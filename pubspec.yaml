@@ -19,6 +19,7 @@ dependencies:
   app_settings: ^5.1.1
   package_info_plus: ^8.1.2
   syncfusion_flutter_gauges: ^28.1.37
+  shared_preferences: ^2.3.5
  
 
   

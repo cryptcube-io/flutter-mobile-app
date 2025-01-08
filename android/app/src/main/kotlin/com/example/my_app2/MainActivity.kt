@@ -15,6 +15,7 @@ import android.os.Process
 import android.content.pm.PackageInfo
 import android.annotation.SuppressLint
 import android.os.Build
+import android.content.pm.ApplicationInfo
 
 enum class PermissionType {
     LOCATION_GPS,
@@ -155,7 +156,6 @@ class MainActivity: FlutterActivity() {
         )
         
         val requestedPermissions = packageInfo.requestedPermissions
-        //println("All requested permissions for $packageName: ${requestedPermissions?.joinToString(", ") ?: "none"}")
         
         if (requestedPermissions != null) {
             for (permission in requestedPermissions) {
@@ -208,6 +208,24 @@ class MainActivity: FlutterActivity() {
         return mode == AppOpsManager.MODE_ALLOWED
     }
 
+    private fun isUserApp(packageInfo: PackageInfo): Boolean {
+        val launchIntent = packageManager.getLaunchIntentForPackage(packageInfo.packageName)
+        if (launchIntent == null) return false
+
+        val appInfo = packageInfo.applicationInfo ?: return false
+
+        if ((appInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0) {
+            val intent = Intent(Intent.ACTION_MAIN)
+            intent.addCategory(Intent.CATEGORY_LAUNCHER)
+            intent.setPackage(packageInfo.packageName)
+            
+            val resolveInfos = packageManager.queryIntentActivities(intent, 0)
+            return resolveInfos.isNotEmpty()
+        }
+
+        return true
+    }
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
@@ -226,6 +244,8 @@ class MainActivity: FlutterActivity() {
                         
                         for (packageInfo in packages) {
                             try {
+                                if (!isUserApp(packageInfo)) continue
+                                
                                 val appInfo = packageManager.getApplicationInfo(packageInfo.packageName, 0)
                                 val app = mutableMapOf<String, Any>()
                                 app["packageName"] = packageInfo.packageName
