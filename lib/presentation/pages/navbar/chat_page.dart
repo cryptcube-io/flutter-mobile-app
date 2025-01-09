@@ -12,7 +12,7 @@ class ChatPage extends StatefulWidget {
   State<ChatPage> createState() => _ChatPageState();
 }
 
-class _ChatPageState extends State<ChatPage> {
+class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final List<Map<String, dynamic>> _messages = [];
@@ -21,11 +21,20 @@ class _ChatPageState extends State<ChatPage> {
   String _currentlyTypingText = '';
   int _currentIndex = 0;
   String? _token;
+  final List<AnimationController> _dotControllers = [];
 
   @override
   void initState() {
     super.initState();
     _loadToken();
+    for (int i = 0; i < 3; i++) {
+      final controller = AnimationController(
+        vsync: this,
+        duration: Duration(milliseconds: 600),
+      );
+      controller.repeat(reverse: true);
+      _dotControllers.add(controller);
+    }
   }
 
   Future<void> _loadToken() async {
@@ -63,7 +72,6 @@ class _ChatPageState extends State<ChatPage> {
       if (response.data != null && response.data['response'] != null) {
         final responseStr = response.data['response'] as String;
 
-        // Extract everything between response=' and the last '}
         final startIndex = responseStr.indexOf("response='") + 10;
         final endIndex = responseStr.lastIndexOf("'}");
 
@@ -75,12 +83,10 @@ class _ChatPageState extends State<ChatPage> {
             String inferenceStr = responseJson['inferenceResponse'].toString();
 
             try {
-              // Try to find the answer in the cleaned string
               if (inferenceStr.contains('"answer"')) {
                 final answerStart = inferenceStr.indexOf('"answer"') + 9;
                 String answer = inferenceStr.substring(answerStart);
 
-                // Clean up the answer
                 answer = answer
                     .replaceAll('"', '')
                     .replaceAll('{', '')
@@ -88,7 +94,6 @@ class _ChatPageState extends State<ChatPage> {
                     .replaceAll('\\n', ' ')
                     .trim();
 
-                // Remove any residual JSON syntax
                 if (answer.endsWith('} }')) {
                   answer = answer.substring(0, answer.length - 4).trim();
                 }
@@ -210,12 +215,11 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Widget _buildDot(int index) {
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0.0, end: 1.0),
-      duration: Duration(milliseconds: 600),
-      builder: (context, value, child) {
+    return AnimatedBuilder(
+      animation: _dotControllers[index],
+      builder: (context, child) {
         return Opacity(
-          opacity: (value + (index * 0.2)) % 1,
+          opacity: _dotControllers[index].value,
           child: Container(
             width: 8,
             height: 8,
@@ -375,6 +379,9 @@ class _ChatPageState extends State<ChatPage> {
   void dispose() {
     _textController.dispose();
     _scrollController.dispose();
+    for (var controller in _dotControllers) {
+      controller.dispose();
+    }
     super.dispose();
   }
 }

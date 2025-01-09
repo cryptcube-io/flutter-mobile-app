@@ -177,26 +177,19 @@ class MainActivity: FlutterActivity() {
     }
 
     private fun getAppUsageStats(): Map<String, Long> {
-        val usageStatsManager = getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
-        val endTime = System.currentTimeMillis()
-        val startTime = 0L
-        
-        val intervals = listOf(
-            UsageStatsManager.INTERVAL_YEARLY,
-            UsageStatsManager.INTERVAL_MONTHLY,
-            UsageStatsManager.INTERVAL_WEEKLY,
-            UsageStatsManager.INTERVAL_DAILY
-        )
-        val usageMap = mutableMapOf<String, Long>()
-        
-        for (interval in intervals) {
-            val stats = usageStatsManager.queryUsageStats(interval, startTime, endTime)
-            stats?.forEach { stat ->
-                usageMap[stat.packageName] = (usageMap[stat.packageName] ?: 0L) + stat.totalTimeInForeground
-            }
-        }
-        return usageMap
+    val usageStatsManager = getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
+    val endTime = System.currentTimeMillis()
+    val startTime = 0L
+    
+    val usageMap = mutableMapOf<String, Long>()
+    
+    val stats = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_YEARLY, startTime, endTime)
+    stats?.forEach { stat ->
+        usageMap[stat.packageName] = stat.totalTimeInForeground
     }
+    
+    return usageMap
+}
 
     private fun hasUsageStatsPermission(): Boolean {
         val appOps = getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
@@ -251,6 +244,8 @@ class MainActivity: FlutterActivity() {
                                 app["packageName"] = packageInfo.packageName
                                 app["appName"] = packageManager.getApplicationLabel(appInfo).toString()
                                 app["usageTime"] = usageStats[packageInfo.packageName] ?: 0L
+                                app["installDate"] = packageInfo.firstInstallTime
+                                app["version"] = packageInfo.versionName ?: ""
                                 apps.add(app)
                             } catch (e: Exception) {
                                 continue

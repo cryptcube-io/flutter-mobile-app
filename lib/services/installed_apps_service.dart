@@ -12,10 +12,10 @@ class InstalledAppsService {
       
       final List<AppInfo> appList = apps
           .map((app) => AppInfo.fromMap(app as Map<Object?, Object?>))
-          .where((app) => app.usageTime.inMilliseconds > 0)
+          .where((app) => app.usageTimeInMilliseconds.inMilliseconds > 0)
           .toList();
 
-      appList.sort((a, b) => b.usageTime.compareTo(a.usageTime));
+      appList.sort((a, b) => b.usageTimeInMilliseconds.compareTo(a.usageTimeInMilliseconds));
 
       final jsonList = appList.map((app) => app.toMap()).toList();
       developer.log(json.encode(jsonList), name: 'AppUsage');
