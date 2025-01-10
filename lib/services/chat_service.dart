@@ -2,6 +2,8 @@
 import 'package:dio/dio.dart';
 import 'dart:convert';
 
+import '../config/api_endpoints.dart';
+
 class ChatService {
   final Dio _dio = Dio();
   
@@ -10,7 +12,7 @@ class ChatService {
       if (token == null) return 'Please sign in first';
 
       final response = await _dio.get(
-        'https://privacydoctor.cryptcube.io/api/privacyConverse',
+        ApiEndpoints.privacy,
         queryParameters: {
           'appName': appName,
           'question': question,

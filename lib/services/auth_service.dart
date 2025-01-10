@@ -1,3 +1,4 @@
+import 'package:Cryptcube_mobile_app/config/api_endpoints.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -5,7 +6,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 class AuthService {
   final _dio = Dio();
   final String baseUrl = dotenv.env['BACKEND_URL'] ?? '';
-  final String fixedSignInUrl = 'https://privacydoctor.cryptcube.io/api/auth/signin?usernameOrEmail=mo3pheus&password=proton101';
 
   
   Future<void> saveToken(String token) async {
@@ -26,11 +26,11 @@ class AuthService {
   Future<String> signIn(String usernameOrEmail, String password) async {
     try {
       print('\n=== Sign In Request ===');
-      print('URL: $fixedSignInUrl');
+      print('URL: $ApiEndpoints.signInUrl');
       print('Content-Type: application/x-www-form-urlencoded');
 
       final response = await _dio.post(
-        fixedSignInUrl,
+        ApiEndpoints.signInUrl,
         options: Options(
           contentType: 'application/x-www-form-urlencoded',
           validateStatus: (status) => true,

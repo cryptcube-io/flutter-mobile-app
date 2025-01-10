@@ -42,7 +42,7 @@ class PrivacyShield extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 40),
-                      // Shield Progress
+                      
                       Center(
                         child: Container(
                           width: 200,
@@ -71,7 +71,7 @@ class PrivacyShield extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 30),
-                      // Status Message
+                    
                       const Text(
                         'Hi John, 75% of apps are supported, but the following aren\'t yet. We\'re working hard to include them soon',
                         style: TextStyle(
@@ -81,7 +81,7 @@ class PrivacyShield extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 30),
-                      // Pending Apps Section
+                 
                       const Text(
                         'Apps Pending Support (6)',
                         style: TextStyle(
@@ -90,7 +90,7 @@ class PrivacyShield extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      // Grid of Apps
+                      
                       GridView.count(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
