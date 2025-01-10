@@ -1,8 +1,12 @@
+// lib/presentation/pages/chat/chat_page.dart
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../../services/chat_service.dart';
+import '../../components/chat_input_field.dart';
+import '../../components/chat_message_bubble.dart';
 import '../../components/custom_navbar.dart';
-import 'dart:convert';
+import '../../components/typing_indicator.dart';
+
 
 class ChatPage extends StatefulWidget {
   final String appName;
@@ -12,29 +16,21 @@ class ChatPage extends StatefulWidget {
   State<ChatPage> createState() => _ChatPageState();
 }
 
-class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
+class _ChatPageState extends State<ChatPage> {
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final List<Map<String, dynamic>> _messages = [];
-  final Dio _dio = Dio();
+  final ChatService _chatService = ChatService();
+  
   bool _isTyping = false;
   String _currentlyTypingText = '';
   int _currentIndex = 0;
   String? _token;
-  final List<AnimationController> _dotControllers = [];
 
   @override
   void initState() {
     super.initState();
     _loadToken();
-    for (int i = 0; i < 3; i++) {
-      final controller = AnimationController(
-        vsync: this,
-        duration: Duration(milliseconds: 600),
-      );
-      controller.repeat(reverse: true);
-      _dotControllers.add(controller);
-    }
   }
 
   Future<void> _loadToken() async {
@@ -42,81 +38,6 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     setState(() {
       _token = prefs.getString('auth_token');
     });
-  }
-
-  Future<String?> _getPrivacyResponse(String question) async {
-    try {
-      print('\n=== Request Details ===');
-      print('Question: $question');
-      print('App Name: ${widget.appName}');
-      print('Token Status: ${_token != null ? 'Present' : 'Missing'}');
-
-      if (_token == null) return 'Please sign in first';
-
-      final response = await _dio.get(
-        'https://privacydoctor.cryptcube.io/api/privacyConverse',
-        queryParameters: {
-          'appName': widget.appName,
-          'question': question,
-          'documentType': 'txt'
-        },
-        options: Options(
-          headers: {'Authorization': 'Bearer $_token'},
-          validateStatus: (status) => true,
-        ),
-      );
-
-      print('\n=== Response Details ===');
-      print('Status Code: ${response.statusCode}');
-
-      if (response.data != null && response.data['response'] != null) {
-        final responseStr = response.data['response'] as String;
-
-        final startIndex = responseStr.indexOf("response='") + 10;
-        final endIndex = responseStr.lastIndexOf("'}");
-
-        if (startIndex > 9 && endIndex != -1) {
-          final jsonStr = responseStr.substring(startIndex, endIndex);
-          final responseJson = json.decode(jsonStr);
-
-          if (responseJson['inferenceResponse'] != null) {
-            String inferenceStr = responseJson['inferenceResponse'].toString();
-
-            try {
-              if (inferenceStr.contains('"answer"')) {
-                final answerStart = inferenceStr.indexOf('"answer"') + 9;
-                String answer = inferenceStr.substring(answerStart);
-
-                answer = answer
-                    .replaceAll('"', '')
-                    .replaceAll('{', '')
-                    .replaceAll('}', '')
-                    .replaceAll('\\n', ' ')
-                    .trim();
-
-                if (answer.endsWith('} }')) {
-                  answer = answer.substring(0, answer.length - 4).trim();
-                }
-
-                print('\n=== Final Processed Answer ===');
-                print(answer);
-                return answer;
-              }
-              return inferenceStr;
-            } catch (e) {
-              print('\n=== Processing Error ===');
-              print('Error processing answer: $e');
-              return inferenceStr.replaceAll('"', '').trim();
-            }
-          }
-        }
-      }
-      return 'Could not process the response';
-    } catch (e) {
-      print('\n=== Error ===');
-      print('Exception occurred: $e');
-      return 'Connection error: $e';
-    }
   }
 
   void _scrollToBottom() {
@@ -171,7 +92,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     _textController.clear();
     _scrollToBottom();
 
-    final response = await _getPrivacyResponse(text);
+    final response = await _chatService.getPrivacyResponse(text, widget.appName, _token);
     if (response != null) {
       _startTypingResponse(response);
     } else {
@@ -184,53 +105,6 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       });
       _scrollToBottom();
     }
-  }
-
-  Widget _buildTypingIndicator() {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Container(
-        margin: EdgeInsets.only(bottom: 16, right: 32),
-        padding: EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.grey[200],
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(12),
-            topRight: Radius.circular(12),
-            bottomRight: Radius.circular(12),
-          ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildDot(0),
-            SizedBox(width: 4),
-            _buildDot(1),
-            SizedBox(width: 4),
-            _buildDot(2),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDot(int index) {
-    return AnimatedBuilder(
-      animation: _dotControllers[index],
-      builder: (context, child) {
-        return Opacity(
-          opacity: _dotControllers[index].value,
-          child: Container(
-            width: 8,
-            height: 8,
-            decoration: BoxDecoration(
-              color: Colors.grey[600],
-              shape: BoxShape.circle,
-            ),
-          ),
-        );
-      },
-    );
   }
 
   @override
@@ -266,23 +140,26 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                   padding: EdgeInsets.all(16),
                   child: Column(
                     children: [
-                      ..._messages
-                          .map((message) =>
-                              _buildMessageBubble(message, context))
-                          .toList(),
+                      ..._messages.map((message) => ChatMessageBubble(
+                            message: message['text'],
+                            isUser: message['isUser'],
+                          )),
                       if (_isTyping && _currentlyTypingText.isEmpty)
-                        _buildTypingIndicator(),
+                        TypingIndicator(),
                       if (_currentlyTypingText.isNotEmpty)
-                        _buildMessageBubble({
-                          'text': _currentlyTypingText,
-                          'isUser': false,
-                        }, context),
+                        ChatMessageBubble(
+                          message: _currentlyTypingText,
+                          isUser: false,
+                        ),
                     ],
                   ),
                 ),
               ),
             ),
-            _buildInputArea(),
+            ChatInputField(
+              controller: _textController,
+              onSubmit: _handleSubmit,
+            ),
           ],
         ),
       ),
@@ -290,98 +167,10 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildMessageBubble(
-      Map<String, dynamic> message, BuildContext context) {
-    return Align(
-      alignment:
-          message['isUser'] ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.7,
-        ),
-        padding: EdgeInsets.all(16),
-        margin: EdgeInsets.only(
-          bottom: 16,
-          left: message['isUser'] ? 32 : 0,
-          right: message['isUser'] ? 0 : 32,
-        ),
-        decoration: BoxDecoration(
-          color: message['isUser'] ? Color(0xFF4A4A4A) : Colors.grey[200],
-          borderRadius: message['isUser']
-              ? BorderRadius.only(
-                  topLeft: Radius.circular(12),
-                  topRight: Radius.circular(12),
-                  bottomLeft: Radius.circular(12),
-                )
-              : BorderRadius.only(
-                  topLeft: Radius.circular(12),
-                  topRight: Radius.circular(12),
-                  bottomRight: Radius.circular(12),
-                ),
-        ),
-        child: Text(
-          message['text'],
-          style: TextStyle(
-            color: message['isUser'] ? Colors.white : Colors.black87,
-            fontSize: 16,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInputArea() {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border(
-          top: BorderSide(color: Colors.grey[300]!),
-        ),
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(8),
-        child: Row(
-          children: [
-            Icon(Icons.attach_file, color: Colors.grey),
-            SizedBox(width: 8),
-            Expanded(
-              child: Container(
-                height: 40,
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey[300]!),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: TextField(
-                  controller: _textController,
-                  onSubmitted: _handleSubmit,
-                  decoration: InputDecoration(
-                    hintText: 'Enter Text',
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(width: 8),
-            Icon(Icons.mic, color: Colors.grey),
-            SizedBox(width: 8),
-            GestureDetector(
-              onTap: () => _handleSubmit(_textController.text),
-              child: Icon(Icons.send, color: Colors.grey),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   @override
   void dispose() {
     _textController.dispose();
     _scrollController.dispose();
-    for (var controller in _dotControllers) {
-      controller.dispose();
-    }
     super.dispose();
   }
 }
