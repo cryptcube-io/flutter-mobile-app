@@ -52,11 +52,11 @@ class _HomePageState extends State<HomePage> {
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
+            children:  [
               SizedBox(height: 20),
               HeaderSection(userName: "John"),
               SizedBox(height: 40),
-              PrivacyScoreSection(),
+              PrivacyScoreSection(token: widget.token),
               SizedBox(height: 40),
               PrivacyShieldSection(),
             ],
