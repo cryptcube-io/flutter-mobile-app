@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:Cryptcube_mobile_app/services/wifi_scanner_service.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 
@@ -32,6 +33,7 @@ class _HomePageState extends State<HomePage> {
   final AppPermissionChecker appPermissionChecker = AppPermissionChecker();
   // final PrivacyScoreService privacyScoreService = PrivacyScoreService();
     final bluetoothScanner = BluetoothScanner();
+    final wifiScanner = WifiScanner();
 
   @override
   void initState() {
@@ -41,7 +43,8 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _checkPermissions() async {
     try {
-      bluetoothScanner.scanDevices();
+      // bluetoothScanner.scanDevices();
+      wifiScanner.scanWifiNetworks();
       // _appsService.getInstalledAppsWithUsage();
       // AppPermissionChecker.printStructuredPermissions("com.chase.sig.android");
 
