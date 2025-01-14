@@ -1,15 +1,16 @@
 import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import '../../../icons/home_page_shield.dart';
 import '../../../icons/privacy_score_gauge.dart';
 import '../../../models/app_info.dart';
 import '../../../services/app_permission_checker.dart';
+import '../../../services/bluetooth_scanner_service.dart';
 import '../../../services/installed_apps_service.dart';
 import 'dart:developer' as developer;
 
+import '../../../services/privacy_score_service.dart';
 import '../../components/custom_navbar.dart';
 import '../score/app_list.dart';
 import '../score/privacy_score_detail.dart';
@@ -29,23 +30,27 @@ class _HomePageState extends State<HomePage> {
   final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
   // final PermissionService _permissionService = PermissionService();
   final AppPermissionChecker appPermissionChecker = AppPermissionChecker();
+  // final PrivacyScoreService privacyScoreService = PrivacyScoreService();
+    final bluetoothScanner = BluetoothScanner();
+
   @override
   void initState() {
     super.initState();
     _checkPermissions();
-
-  }    
-
+  }
 
   Future<void> _checkPermissions() async {
-  try {
-    _appsService.getInstalledAppsWithUsage();
-    // AppPermissionChecker.printStructuredPermissions("com.chase.sig.android");
-  } catch (e) {
-    print('Error checking permissions: $e');
-    print('Stack trace: ${StackTrace.current}');
+    try {
+      bluetoothScanner.scanDevices();
+      // _appsService.getInstalledAppsWithUsage();
+      // AppPermissionChecker.printStructuredPermissions("com.chase.sig.android");
+
+      // privacyScoreService.getAllPrivacyData("appName", "appVector");
+    } catch (e) {
+      print('Error checking permissions: $e');
+      print('Stack trace: ${StackTrace.current}');
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -113,7 +118,6 @@ class _HomePageState extends State<HomePage> {
                     child: Stack(
                       clipBehavior: Clip.none, // This allows child to overflow
                       children: [
-                        
                         Positioned(
                           left:
                               -20, // Adjust these values to position the outer circle

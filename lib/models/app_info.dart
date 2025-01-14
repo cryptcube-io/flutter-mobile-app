@@ -1,9 +1,12 @@
+import 'dart:io';
+
 class AppInfo {
   final String packageName;
   final String appName;
   final Duration usageTimeInMilliseconds;
   final DateTime installDate;
   final String version;
+  final String operatingSystem;
 
   AppInfo({
     required this.packageName,
@@ -11,6 +14,7 @@ class AppInfo {
     required this.usageTimeInMilliseconds,
     required this.installDate,
     required this.version,
+    required this.operatingSystem,
   });
 
   factory AppInfo.fromMap(Map<Object?, Object?> map) {
@@ -20,6 +24,7 @@ class AppInfo {
       usageTimeInMilliseconds: Duration(milliseconds: (map['usageTime'] as int).toInt()),
       installDate: DateTime.fromMillisecondsSinceEpoch(map['installDate'] as int),
       version: map['version'] as String,
+      operatingSystem: map['operatingSystem'] as String? ?? (Platform.isAndroid ? 'ANDROID' : 'MAC'),
     );
   }
 
@@ -30,6 +35,7 @@ class AppInfo {
       'usageTimeInMilliseconds': usageTimeInMilliseconds.inMilliseconds,
       'installationDate': installDate.toIso8601String(),
       'version': version,
+      'operatingSystem': operatingSystem,
     };
   }
 
