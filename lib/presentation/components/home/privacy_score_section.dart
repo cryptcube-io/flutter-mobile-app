@@ -1,58 +1,59 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dio/dio.dart';
 import '../../../config/api_endpoints.dart';
+import '../../../services/auth_notifier_service.dart';
 import '../../pages/score/privacy_score_detail.dart';
 import '../../../icons/privacy_score_gauge.dart';
 
+class PrivacyScoreSection extends ConsumerStatefulWidget {
+  const PrivacyScoreSection({super.key});
 
-class PrivacyScoreSection extends StatefulWidget {
- final String token;
- 
- const PrivacyScoreSection({super.key, required this.token});
-
- @override
- State<PrivacyScoreSection> createState() => _PrivacyScoreSectionState();
+  @override
+  ConsumerState<PrivacyScoreSection> createState() => _PrivacyScoreSectionState();
 }
 
-class _PrivacyScoreSectionState extends State<PrivacyScoreSection> {
- int privacyScore = 0;
- bool isLoading = true;
+class _PrivacyScoreSectionState extends ConsumerState<PrivacyScoreSection> {
+  int privacyScore = 0;
+  bool isLoading = true;
 
- @override
- void initState() {
-   super.initState();
-   fetchPrivacyScore();
- }
+  @override
+  void initState() {
+    super.initState();
+    fetchPrivacyScore();
+  }
 
- Future<void> fetchPrivacyScore() async {
-   final dio = Dio();
-   try {
-     final response = await dio.get(
-       ApiEndpoints.getOverallPrivacyScore,
-       options: Options(
-         headers: {
-           'Authorization': 'Bearer ${widget.token}',
-         },
-       ),
-     );
+  Future<void> fetchPrivacyScore() async {
+    final token = ref.read(authProvider).token;
+    if (token == null) return;
 
-     if (response.statusCode == 200) {
-       setState(() {
-         privacyScore = response.data;
-         isLoading = false;
-       });
-     } else {
-       setState(() {
-         isLoading = false;
-       });
-     }
-   } catch (e) {
-     setState(() {
-       isLoading = false;
-     });
-   }
- }
+    final dio = Dio();
+    try {
+      final response = await dio.get(
+        ApiEndpoints.getOverallPrivacyScore,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
 
+      if (response.statusCode == 200) {
+        setState(() {
+          privacyScore = response.data;
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
  @override
  Widget build(BuildContext context) {
    return Column(

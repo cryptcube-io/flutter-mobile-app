@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'package:dio/dio.dart';
+import '../config/api_endpoints.dart';
 import '../models/app_item.dart';
 import '../../../services/installed_apps_service.dart';
 
 class AppLoaderService {
   final Random random = Random();
   final InstalledAppsService _appsService = InstalledAppsService();
+  final Dio _dio = Dio();
   
   final List<IconData> icons = [
     Icons.apps, Icons.android, Icons.phone_android, Icons.app_blocking,
@@ -28,28 +31,65 @@ class AppLoaderService {
     return icons[random.nextInt(icons.length)];
   }
 
-  Future<List<AppItem>> loadApps() async {
-    print("Loading apps...");
-    final appInfoList = await _appsService.getInstalledAppsWithUsage();
-    print("Original list:");
+  Future<int> getPrivacyScore(String token, String appName, String appVector) async {
+    try {
+      final response = await _dio.get(
+        ApiEndpoints.getApplicationPrivacyScore,
+        queryParameters: {
+          'appName': appName,
+          'appVector': appVector
+        },
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+          responseType: ResponseType.plain
+        ),
+      );
+      
+      if (response.statusCode == 200) {
+        return int.parse(response.data.toString());
+      }
+      throw DioException(
+        requestOptions: response.requestOptions,
+        message: 'Failed to get privacy score'
+      );
+    } catch (e) {
+      throw Exception('Failed to get privacy score: $e');
+    }
+  }
 
+  Future<List<AppItem>> loadApps(String? token) async {
+    if (token == null) throw Exception('Token is required');
+    
+    final appInfoList = await _appsService.getInstalledAppsWithUsage();
     if (appInfoList.isEmpty) return [];
 
     final sortedApps = List<Map<String, dynamic>>.from(appInfoList)
       ..sort((a, b) => (b['usageTimeInMilliseconds'] as int)
           .compareTo(a['usageTimeInMilliseconds'] as int));
 
-    print("Sorted list:");
-    sortedApps.forEach((app) => print("${app['appName']} (${app['usageTimeInMilliseconds']} ms)"));
+    List<AppItem> appItems = [];
+    
+    for (var appInfo in sortedApps) {
+      try {
+        final score = await getPrivacyScore(
+          token,
+          appInfo['appName'],
+          appInfo['packageName']
+        );
+        print("making progress");
 
-    return sortedApps.map((appInfo) {
-      return AppItem(
-        name: appInfo['appName'],
-        packageName: appInfo['packageName'],
-        score: '${600 + (appInfo['appName'].hashCode % 200)}/800',
-        color: getRandomColor(),
-        icon: getRandomIcon(),
-      );
-    }).toList();
+        appItems.add(AppItem(
+          name: appInfo['appName'],
+          packageName: appInfo['packageName'],
+          score: '$score/800',
+          color: getRandomColor(),
+          icon: getRandomIcon(),
+        ));
+      } catch (e) {
+        print('Error getting score for ${appInfo['appName']}: $e');
+      }
+    }
+
+    return appItems;
   }
 }

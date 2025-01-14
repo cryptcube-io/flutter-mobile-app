@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../models/app_item.dart';
 import '../../../services/app_loader_service.dart';
+import '../../../services/auth_notifier_service.dart';
 import '../../components/appListPage/app_list_item.dart';
 import '../../components/custom_navbar.dart';
 
-
-class AppList extends StatefulWidget {
+class AppList extends ConsumerStatefulWidget {
   const AppList({super.key});
 
   @override
-  State<AppList> createState() => _AppListState();
+  ConsumerState<AppList> createState() => _AppListState();
 }
 
-class _AppListState extends State<AppList> {
+class _AppListState extends ConsumerState<AppList> {
   final AppLoaderService _appLoader = AppLoaderService();
   List<AppItem> apps = [];
   bool isLoading = true;
@@ -25,7 +26,8 @@ class _AppListState extends State<AppList> {
 
   Future<void> _loadApps() async {
     try {
-      final loadedApps = await _appLoader.loadApps();
+      final token = ref.read(authProvider).token;
+      final loadedApps = await _appLoader.loadApps(token);
       setState(() {
         apps = loadedApps;
         isLoading = false;
@@ -34,6 +36,12 @@ class _AppListState extends State<AppList> {
       setState(() {
         isLoading = false;
       });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to load apps'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 

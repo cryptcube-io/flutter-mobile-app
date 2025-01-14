@@ -1,63 +1,51 @@
 import 'package:flutter/material.dart';
-import '../../../services/auth_service.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../services/auth_notifier_service.dart';
 import '../navbar/home_page.dart';
 import 'signup_page.dart';
 
-class SignInPage extends StatefulWidget {
+class SignInPage extends ConsumerStatefulWidget {
   const SignInPage({super.key});
 
   @override
-  State<SignInPage> createState() => _SignInPageState();
+  ConsumerState<SignInPage> createState() => _SignInPageState();
 }
 
-class _SignInPageState extends State<SignInPage> {
+class _SignInPageState extends ConsumerState<SignInPage> {
   final _formKey = GlobalKey<FormState>();
-  final _authService = AuthService();
-  bool _isLoading = false;
   bool _obscurePassword = true;
-
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  void _handleSignIn() async 
-  {
-    if (_isLoading) return;
+  void _handleSignIn() async {
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final token = await _authService.signIn(
-        _usernameController.text,
-        _passwordController.text,
-      );
-
-      if (!mounted) return;
-
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => HomePage(token: token)),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString()),
-          backgroundColor: Colors.red,
-        ),
-      );
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
+    await ref.read(authProvider.notifier).signIn(
+          _usernameController.text,
+          _passwordController.text,
+        );
   }
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authProvider);
+    
+    if (authState.token != null) {
+      return const HomePage();
+    }
+
+    if (authState.error != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(authState.error!),
+            backgroundColor: Colors.red,
+          ),
+        );
+        ref.read(authProvider.notifier).clearError();
+      });
+    }
+
     return Scaffold(
       body: Listener(
         onPointerDown: (_) => FocusScope.of(context).unfocus(),
@@ -132,13 +120,12 @@ class _SignInPageState extends State<SignInPage> {
                     SizedBox(
                       height: 50,
                       child: ElevatedButton(
-                        onPressed: _isLoading ? null : _handleSignIn,
-                        child: _isLoading
+                        onPressed: authState.isLoading ? null : _handleSignIn,
+                        child: authState.isLoading
                             ? const SizedBox(
                                 height: 20,
                                 width: 20,
-                                child:
-                                    CircularProgressIndicator(strokeWidth: 2),
+                                child: CircularProgressIndicator(strokeWidth: 2),
                               )
                             : const Text('Sign In'),
                       ),

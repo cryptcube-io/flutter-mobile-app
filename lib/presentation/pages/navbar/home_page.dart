@@ -1,6 +1,7 @@
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import '../../../services/app_permission_checker.dart';
+import '../../../services/auth_notifier_service.dart';
 import '../../../services/bluetooth_scanner_service.dart';
 import '../../../services/installed_apps_service.dart';
 import '../../../services/wifi_scanner_service.dart';
@@ -10,9 +11,9 @@ import '../../components/home/privacy_score_section.dart';
 import '../../components/home/privacy_shield_section.dart';
 
 class HomePage extends StatefulWidget {
-  final String token;
+  
 
-  const HomePage({super.key, required this.token});
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -45,6 +46,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -56,7 +58,7 @@ class _HomePageState extends State<HomePage> {
               SizedBox(height: 20),
               HeaderSection(userName: "John"),
               SizedBox(height: 40),
-              PrivacyScoreSection(token: widget.token),
+              PrivacyScoreSection(),
               SizedBox(height: 40),
               PrivacyShieldSection(),
             ],

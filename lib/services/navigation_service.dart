@@ -24,7 +24,7 @@ class NavigationService {
 
     switch (index) {
       case 1:
-        page = const HomePage(token: "ddasnjk");
+        page = const HomePage();
         break;
       case 2:
         page = ChatPage(appName: "ChatGPT");
