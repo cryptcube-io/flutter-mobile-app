@@ -1,12 +1,56 @@
 import 'package:flutter/material.dart';
-
-
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:dio/dio.dart';
+import '../../../config/api_endpoints.dart';
+import '../../../services/auth_notifier_service.dart';
 import '../../components/custom_navbar.dart';
 import 'app_list.dart';
 import 'privacy_score_factors.dart';
 
-class PrivacyScoreDetail extends StatelessWidget {
+class PrivacyScoreDetail extends ConsumerStatefulWidget {
   const PrivacyScoreDetail({super.key});
+
+  @override
+  ConsumerState<PrivacyScoreDetail> createState() => _PrivacyScoreDetailState();
+}
+
+class _PrivacyScoreDetailState extends ConsumerState<PrivacyScoreDetail> {
+  final Dio _dio = Dio();
+  String explanation = '';
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchExplanation();
+  }
+
+  Future<void> _fetchExplanation() async {
+    try {
+      final token = ref.read(authProvider).token;
+      if (token == null) return;
+
+      final response = await _dio.get(
+        ApiEndpoints.getOverallScoreExplanation,
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+          responseType: ResponseType.plain,
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        setState(() {
+          explanation = response.data.toString();
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      print('Error fetching explanation: $e');
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,13 +60,13 @@ class PrivacyScoreDetail extends StatelessWidget {
         child: Column(
           children: [
             Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Column(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 20),
-                    
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -45,7 +89,6 @@ class PrivacyScoreDetail extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 40),
-                   
                     Center(
                       child: Container(
                         width: 200,
@@ -65,7 +108,6 @@ class PrivacyScoreDetail extends StatelessWidget {
                         child: Stack(
                           alignment: Alignment.center,
                           children: [
-                            
                             const Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -85,7 +127,6 @@ class PrivacyScoreDetail extends StatelessWidget {
                                 ),
                               ],
                             ),
-                           
                             CustomPaint(
                               size: const Size(200, 200),
                               painter: ScoreIndicatorPainter(),
@@ -95,7 +136,6 @@ class PrivacyScoreDetail extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    
                     const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -117,7 +157,6 @@ class PrivacyScoreDetail extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 20),
-                    
                     Container(
                       height: 8,
                       decoration: BoxDecoration(
@@ -141,14 +180,13 @@ class PrivacyScoreDetail extends StatelessWidget {
                             ),
                           ),
                           const Expanded(
-                            flex: 132, 
+                            flex: 132,
                             child: SizedBox(),
                           ),
                         ],
                       ),
                     ),
                     const SizedBox(height: 8),
-                    
                     const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -171,7 +209,28 @@ class PrivacyScoreDetail extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 30),
-                    
+                    if (isLoading)
+                      const Center(child: CircularProgressIndicator())
+                    else
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[100],
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          explanation,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.black87,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    const SizedBox(height: 16),
                     const Center(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -192,7 +251,6 @@ class PrivacyScoreDetail extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    
                     const Center(
                       child: Text(
                         'Generated on 19 Dec 2024',
@@ -203,7 +261,6 @@ class PrivacyScoreDetail extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 30),
-                   
                     Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
@@ -235,7 +292,7 @@ class PrivacyScoreDetail extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => AppList(),
+                                  builder: (context) => const AppList(),
                                 ),
                               );
                             },
@@ -244,10 +301,10 @@ class PrivacyScoreDetail extends StatelessWidget {
                           _buildListItem(
                             'Privacy Score Factors',
                             onTap: () {
-                             Navigator.push(
+                              Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => PrivacyScoreFactors(),
+                                  builder: (context) => const PrivacyScoreFactors(),
                                 ),
                               );
                             },
@@ -259,7 +316,8 @@ class PrivacyScoreDetail extends StatelessWidget {
                 ),
               ),
             ),
-            CustomNavBar(),
+            ),
+             CustomNavBar(),
           ],
         ),
       ),
@@ -298,7 +356,6 @@ class ScoreIndicatorPainter extends CustomPainter {
       center: Offset(size.width / 2, size.height / 2),
       radius: size.width / 2 - 10,
     );
-
     
     for (double i = -1.5; i < 0.2; i += 0.1) {
       canvas.drawArc(
