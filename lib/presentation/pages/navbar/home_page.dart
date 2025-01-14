@@ -36,7 +36,7 @@ class _HomePageState extends State<HomePage> {
     try {
       // wifiScanner.scanWifiNetworks();
       // _appsService.getInstalledAppsWithUsage();
-      AppPermissionChecker.printStructuredPermissions("com.google.android.apps.maps");
+      // AppPermissionChecker.printStructuredPermissions("com.google.android.apps.maps");
     } catch (e) {
       print('Error checking permissions: $e');
       print('Stack trace: ${StackTrace.current}');

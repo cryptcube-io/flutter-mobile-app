@@ -23,19 +23,33 @@ class AppLoaderService {
       1,
     );
   }
-  
+
   IconData getRandomIcon() {
     return icons[random.nextInt(icons.length)];
   }
 
   Future<List<AppItem>> loadApps() async {
+    print("Loading apps...");
     final appInfoList = await _appsService.getInstalledAppsWithUsage();
-    return appInfoList.map((appInfo) => AppItem(
-      name: appInfo.appName,
-      packageName: appInfo.packageName,
-      score: '${600 + (appInfo.appName.hashCode % 200)}/800',
-      color: getRandomColor(),
-      icon: getRandomIcon(),
-    )).toList();
+    print("Original list:");
+
+    if (appInfoList.isEmpty) return [];
+
+    final sortedApps = List<Map<String, dynamic>>.from(appInfoList)
+      ..sort((a, b) => (b['usageTimeInMilliseconds'] as int)
+          .compareTo(a['usageTimeInMilliseconds'] as int));
+
+    print("Sorted list:");
+    sortedApps.forEach((app) => print("${app['appName']} (${app['usageTimeInMilliseconds']} ms)"));
+
+    return sortedApps.map((appInfo) {
+      return AppItem(
+        name: appInfo['appName'],
+        packageName: appInfo['packageName'],
+        score: '${600 + (appInfo['appName'].hashCode % 200)}/800',
+        color: getRandomColor(),
+        icon: getRandomIcon(),
+      );
+    }).toList();
   }
 }

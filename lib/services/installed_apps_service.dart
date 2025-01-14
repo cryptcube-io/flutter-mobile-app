@@ -27,7 +27,7 @@ class InstalledAppsService {
     }
   }
 
-  Future<List<AppInfo>> getInstalledAppsWithUsage() async {
+  Future<List<Object>> getInstalledAppsWithUsage() async {
     try {
       final List<dynamic> apps =
           await platform.invokeMethod('getInstalledAppsWithUsage');
@@ -47,11 +47,11 @@ class InstalledAppsService {
           b.usageTimeInMilliseconds.compareTo(a.usageTimeInMilliseconds));
 
       final jsonList = appList.map((app) => app.toMap()).toList();
-      developer.log(json.encode(jsonList), name: 'AppUsage');
+      // developer.log(json.encode(jsonList), name: 'AppUsage');
 
       // _sendToPrivacyShield(jsonList);
 
-      return appList;
+      return jsonList;
     } on PlatformException catch (e) {
       if (e.code == 'PERMISSION_DENIED') {
         developer.log('Usage stats permission required', name: 'AppUsage');
