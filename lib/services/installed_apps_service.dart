@@ -49,7 +49,7 @@ class InstalledAppsService {
       final jsonList = appList.map((app) => app.toMap()).toList();
       developer.log(json.encode(jsonList), name: 'AppUsage');
 
-      _sendToPrivacyShield(jsonList);
+      // _sendToPrivacyShield(jsonList);
 
       return appList;
     } on PlatformException catch (e) {
