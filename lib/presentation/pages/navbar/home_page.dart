@@ -1,5 +1,6 @@
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
+import '../../../services/app_info_db_loader_service.dart';
 import '../../../services/app_permission_checker.dart';
 import '../../../services/auth_notifier_service.dart';
 import '../../../services/bluetooth_scanner_service.dart';
@@ -11,8 +12,6 @@ import '../../components/home/privacy_score_section.dart';
 import '../../components/home/privacy_shield_section.dart';
 
 class HomePage extends StatefulWidget {
-  
-
   const HomePage({super.key});
 
   @override
@@ -25,7 +24,7 @@ class _HomePageState extends State<HomePage> {
   final AppPermissionChecker appPermissionChecker = AppPermissionChecker();
   final bluetoothScanner = BluetoothScanner();
   final wifiScanner = WifiScanner();
-
+  final AppPrivacyService _appPrivacyService = AppPrivacyService();
 
   @override
   void initState() {
@@ -35,6 +34,9 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _checkPermissions() async {
     try {
+      await _appPrivacyService.init();
+      await _appPrivacyService.updateAppPrivacyData();
+      await _appPrivacyService.printStoredData();
       // wifiScanner.scanWifiNetworks();
       // _appsService.getInstalledAppsWithUsage();
       // AppPermissionChecker.printStructuredPermissions("com.google.android.apps.maps");
@@ -46,7 +48,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -54,7 +55,7 @@ class _HomePageState extends State<HomePage> {
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children:  [
+            children: [
               SizedBox(height: 20),
               HeaderSection(userName: "John"),
               SizedBox(height: 40),
@@ -65,7 +66,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
-      bottomNavigationBar:  CustomNavBar(),
+      bottomNavigationBar: CustomNavBar(),
     );
   }
 }
