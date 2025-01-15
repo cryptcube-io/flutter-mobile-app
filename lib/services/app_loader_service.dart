@@ -57,7 +57,7 @@ class AppLoaderService {
     }
   }
 
-  Future<List<AppItem>> loadApps(String? token) async {
+  Future<List<AppItem>> loadApps(String? token, {int page = 0, int pageSize = 20}) async {
     if (token == null) throw Exception('Token is required');
     
     final appInfoList = await _appsService.getInstalledAppsWithUsage();
@@ -67,16 +67,21 @@ class AppLoaderService {
       ..sort((a, b) => (b['usageTimeInMilliseconds'] as int)
           .compareTo(a['usageTimeInMilliseconds'] as int));
 
+    final startIndex = page * pageSize;
+    if (startIndex >= sortedApps.length) return [];
+
+    final endIndex = min(startIndex + pageSize, sortedApps.length);
+    final currentPageApps = sortedApps.sublist(startIndex, endIndex);
+
     List<AppItem> appItems = [];
     
-    for (var appInfo in sortedApps) {
+    for (var appInfo in currentPageApps) {
       try {
         final score = await getPrivacyScore(
           token,
           appInfo['appName'],
           appInfo['packageName']
         );
-        print("making progress");
 
         appItems.add(AppItem(
           name: appInfo['appName'],

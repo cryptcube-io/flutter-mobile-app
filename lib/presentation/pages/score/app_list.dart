@@ -15,22 +15,42 @@ class AppList extends ConsumerStatefulWidget {
 
 class _AppListState extends ConsumerState<AppList> {
   final AppLoaderService _appLoader = AppLoaderService();
+  final ScrollController _scrollController = ScrollController();
   List<AppItem> apps = [];
   bool isLoading = true;
+  bool isLoadingMore = false;
+  bool hasMoreItems = true;
+  int currentPage = 0;
+  static const int pageSize = 20;
 
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_onScroll);
     _loadApps();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent * 0.8) {
+      _loadMoreApps();
+    }
   }
 
   Future<void> _loadApps() async {
     try {
       final token = ref.read(authProvider).token;
-      final loadedApps = await _appLoader.loadApps(token);
+      final loadedApps = await _appLoader.loadApps(token, page: 0, pageSize: pageSize);
       setState(() {
         apps = loadedApps;
         isLoading = false;
+        hasMoreItems = loadedApps.length == pageSize;
+        currentPage = 0;
       });
     } catch (e) {
       setState(() {
@@ -39,6 +59,40 @@ class _AppListState extends ConsumerState<AppList> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Failed to load apps'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Future<void> _loadMoreApps() async {
+    if (isLoadingMore || !hasMoreItems) return;
+
+    setState(() {
+      isLoadingMore = true;
+    });
+
+    try {
+      final token = ref.read(authProvider).token;
+      final loadedApps = await _appLoader.loadApps(
+        token,
+        page: currentPage + 1,
+        pageSize: pageSize,
+      );
+
+      setState(() {
+        apps.addAll(loadedApps);
+        isLoadingMore = false;
+        hasMoreItems = loadedApps.length == pageSize;
+        currentPage++;
+      });
+    } catch (e) {
+      setState(() {
+        isLoadingMore = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to load more apps'),
           backgroundColor: Colors.red,
         ),
       );
@@ -72,15 +126,26 @@ class _AppListState extends ConsumerState<AppList> {
             else
               Expanded(
                 child: ListView.builder(
-                  itemCount: apps.length,
+                  controller: _scrollController,
+                  itemCount: apps.length + (hasMoreItems ? 1 : 0),
                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                  itemBuilder: (context, index) => AppListItem(app: apps[index]),
+                  itemBuilder: (context, index) {
+                    if (index == apps.length) {
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 16.0),
+                        child: Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                    }
+                    return AppListItem(app: apps[index]);
+                  },
                 ),
               ),
           ],
         ),
       ),
-      bottomNavigationBar:  CustomNavBar(),
+      bottomNavigationBar: CustomNavBar(),
     );
   }
 }
