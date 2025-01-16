@@ -1,7 +1,7 @@
 import 'package:hive/hive.dart';
 
 @HiveType(typeId: 1)
-class AppPrivacyInfo extends HiveObject {
+class AppInfoEntity extends HiveObject {
   @HiveField(0)
   final String packageName;
 
@@ -26,7 +26,7 @@ class AppPrivacyInfo extends HiveObject {
   @HiveField(7)
   final String scoreExplanation;
 
-  AppPrivacyInfo({
+  AppInfoEntity({
     required this.packageName,
     required this.appName,
     required this.usageTimeInMilliseconds,
@@ -37,9 +37,9 @@ class AppPrivacyInfo extends HiveObject {
     this.scoreExplanation = '',
   });
 
-  factory AppPrivacyInfo.fromMap(Map<String, dynamic> map) {
+  factory AppInfoEntity.fromMap(Map<String, dynamic> map) {
     try {
-      return AppPrivacyInfo(
+      return AppInfoEntity(
         packageName: map['packageName']?.toString() ?? '',
         appName: map['appName']?.toString() ?? '',
         usageTimeInMilliseconds: int.tryParse(map['usageTimeInMilliseconds']?.toString() ?? '0') ?? 0,

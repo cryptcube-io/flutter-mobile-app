@@ -3,12 +3,12 @@ import 'package:hive/hive.dart';
 import '../models/app_info_database.dart';
 
 @HiveType(typeId: 0)
-class AppPrivacyInfoAdapter extends TypeAdapter<AppPrivacyInfo> {
+class AppPrivacyInfoAdapter extends TypeAdapter<AppInfoEntity> {
   @override
   final int typeId = 0;
 
   @override
-  AppPrivacyInfo read(BinaryReader reader) {
+  AppInfoEntity read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{};
     for (var i = 0; i < numOfFields; i++) {
@@ -16,7 +16,7 @@ class AppPrivacyInfoAdapter extends TypeAdapter<AppPrivacyInfo> {
     }
     
     try {
-      return AppPrivacyInfo(
+      return AppInfoEntity(
         packageName: fields[0]?.toString() ?? '',
         appName: fields[1]?.toString() ?? '',
         usageTimeInMilliseconds: fields[2] is int ? fields[2] : 0,
@@ -34,7 +34,7 @@ class AppPrivacyInfoAdapter extends TypeAdapter<AppPrivacyInfo> {
   }
 
   @override
-  void write(BinaryWriter writer, AppPrivacyInfo obj) {
+  void write(BinaryWriter writer, AppInfoEntity obj) {
     try {
       writer.writeByte(8);
       writer.writeByte(0);

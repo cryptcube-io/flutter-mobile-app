@@ -24,7 +24,7 @@ class _HomePageState extends State<HomePage> {
   final AppPermissionChecker appPermissionChecker = AppPermissionChecker();
   final bluetoothScanner = BluetoothScanner();
   final wifiScanner = WifiScanner();
-  final AppPrivacyService _appPrivacyService = AppPrivacyService();
+  final AppInfoDbLoaderService _appPrivacyService = AppInfoDbLoaderService();
 
   @override
   void initState() {
