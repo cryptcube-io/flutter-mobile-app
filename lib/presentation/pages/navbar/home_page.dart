@@ -35,8 +35,8 @@ class _HomePageState extends State<HomePage> {
   Future<void> _checkPermissions() async {
     try {
       await _appPrivacyService.init();
-      await _appPrivacyService.updateAppPrivacyData();
-      await _appPrivacyService.printStoredData();
+      // await _appPrivacyService.updateAppPrivacyData();
+      // await _appPrivacyService.printStoredData();
       // wifiScanner.scanWifiNetworks();
       // _appsService.getInstalledAppsWithUsage();
       // AppPermissionChecker.printStructuredPermissions("com.google.android.apps.maps");

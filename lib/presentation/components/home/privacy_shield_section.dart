@@ -7,80 +7,76 @@ class PrivacyShieldSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Privacy Shield',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8F7FF),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Privacy Shield',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ),
-        const SizedBox(height: 20),
-        Center(
-          child: Column(
+          const SizedBox(height: 16),
+          Row(
             children: [
-              SizedBox(
-                width: 150,
-                height: 150,
-                child: ShaderMask(
-                  shaderCallback: (Rect bounds) {
-                    return LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Colors.green.withOpacity(0.7),
-                        Colors.blue.withOpacity(0.7),
-                      ],
-                    ).createShader(bounds);
-                  },
-                  child: const Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      PercentageShieldIcon(
-                        percentage: 50,
-                        color: Colors.white,
-                        size: 150,
-                      ),
-                    ],
+              Expanded(
+                child: Text(
+                  'Lorem ipsum dolor amet, consectetur adipiscing elit. Parturient suspendisse ipsum mi scelerisque nascetur present molestie.',
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    height: 1.5,
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
-              TextButton(
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const PrivacyShield(),
-                  ),
+              const SizedBox(width: 24),
+              Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF6C5CE7).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.grey[100],
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    Text(
-                      'What this Means',
-                      style: TextStyle(
-                        color: Colors.black87,
-                        fontSize: 16,
-                      ),
+                child: const Center(
+                  child: Text(
+                    '75%',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF6C5CE7),
                     ),
-                    SizedBox(width: 8),
-                    Icon(Icons.arrow_forward, size: 20, color: Colors.black87),
-                  ],
+                  ),
                 ),
               ),
             ],
           ),
-        ),
-      ],
+          const SizedBox(height: 16),
+          TextButton(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const PrivacyShield(),
+              ),
+            ),
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.zero,
+            ),
+            child: const Text(
+              'What this Means?',
+              style: TextStyle(
+                color: Color(0xFF6C5CE7),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

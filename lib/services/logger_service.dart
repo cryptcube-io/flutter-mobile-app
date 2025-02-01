@@ -14,6 +14,8 @@ class LoggerService {
 
     Logger.root.level = Level.ALL;
 
+    final consoleAppender = PrintAppender();
+
     final infoAppender = RotatingFileAppender(
       baseFilePath: '${logDir.path}/info.log',
       rotateAtSizeBytes: MAX_FILE_SIZE,
@@ -32,17 +34,25 @@ class LoggerService {
       keepRotateCount: BACKUP_COUNT,
     );
 
+    consoleAppender.attachToLogger(Logger.root);
     infoAppender.attachToLogger(Logger.root);
     debugAppender.attachToLogger(Logger.root);
     errorAppender.attachToLogger(Logger.root);
 
     Logger.root.onRecord.listen((record) {
+      consoleAppender.handle(record);
+      
       if (record.level == Level.INFO) {
         infoAppender.handle(record);
       } else if (record.level == Level.FINE) {
         debugAppender.handle(record);
       } else if (record.level >= Level.SEVERE) {
         errorAppender.handle(record);
+      }
+      
+      if (record.error != null || record.stackTrace != null) {
+        print('Error: ${record.error}');
+        print('StackTrace: ${record.stackTrace}');
       }
     });
   }

@@ -16,46 +16,57 @@ class SimpleRadialGauge extends StatefulWidget {
 class _SimpleRadialGaugeState extends State<SimpleRadialGauge> {
   @override
   Widget build(BuildContext context) {
-    return SfRadialGauge(
-      axes: <RadialAxis>[
-        RadialAxis(
-          minimum: 0,
-          maximum: 800,
-          showLabels: false,
-          showTicks: false,
-          axisLineStyle: AxisLineStyle(
-            thickness: 0.2,
-            color: Colors.white,
-            thicknessUnit: GaugeSizeUnit.factor,
-          ),
-          pointers: <GaugePointer>[
-            RangePointer(
-              value: widget.value,
-              width: 0.2,
-              sizeUnit: GaugeSizeUnit.factor,
-              enableAnimation: true,
-              animationDuration: 1000,
-              color: Colors.red,
+    return SizedBox(
+      width: 280, // Fixed width to control gauge size
+      height: 140, // Half height for semi-circle
+      child: SfRadialGauge(
+        axes: <RadialAxis>[
+          RadialAxis(
+            minimum: 0,
+            maximum: 850,
+            showLabels: false,
+            showTicks: false,
+            radiusFactor: 1,
+            axisLineStyle: AxisLineStyle(
+              thickness: 0.1,
+              color: Colors.grey.withOpacity(0.1),
+              thicknessUnit: GaugeSizeUnit.factor,
             ),
-          ],
-          startAngle: 160,
-          endAngle: 370,
-          annotations: <GaugeAnnotation>[
-            GaugeAnnotation(
-              widget: Text(
-                '${widget.value.toInt()}',
-                style: TextStyle(
-                  fontSize: 40,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
+            pointers: <GaugePointer>[
+              RangePointer(
+                value: widget.value,
+                width: 0.1,
+                sizeUnit: GaugeSizeUnit.factor,
+                enableAnimation: true,
+                animationDuration: 1000,
+                color: const Color(0xFF6C5CE7),
               ),
-              positionFactor: 0.1,
-              angle: 270,
-            )
-          ],
-        )
-      ],
+            ],
+            startAngle: 180,
+            endAngle: 0,
+            canRotateLabels: false,
+            annotations: <GaugeAnnotation>[
+              GaugeAnnotation(
+                widget: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      '${widget.value.toInt()}',
+                      style: const TextStyle(
+                        fontSize: 48,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ],
+                ),
+                angle: 90,
+                positionFactor: 0.1,
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

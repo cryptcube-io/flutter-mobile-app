@@ -7,35 +7,49 @@ class HeaderSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+        Text(
+          'Hi $userName,',
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: const [
             Text(
-              'Hi $userName,',
-              style: const TextStyle(
+              'Your Privacy is at ',
+              style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const Text(
-              "Here's your Privacy Score",
+            Text(
+              'Risk',
               style: TextStyle(
-                fontSize: 20,
-                color: Colors.black87,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.orange,
+              ),
+            ),
+            Text(
+              '.',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ],
         ),
-        CircleAvatar(
-          backgroundColor: Colors.blue[100],
-          radius: 25,
-          child: const Icon(
-            Icons.person,
-            color: Colors.blue,
-            size: 30,
+        const SizedBox(height: 8),
+        Text(
+          'Lorem ipsum dolor amet, consectetur adipiscing elit.',
+          style: TextStyle(
+            color: Colors.grey[600],
+            fontSize: 14,
           ),
         ),
       ],

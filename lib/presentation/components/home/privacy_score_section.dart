@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dio/dio.dart';
 import '../../../config/api_endpoints.dart';
 import '../../../services/auth_notifier_service.dart';
+import '../../../services/logger_service.dart';
 import '../../pages/score/privacy_score_detail.dart';
 import '../../../icons/privacy_score_gauge.dart';
+import 'package:logging/logging.dart';
 
 class PrivacyScoreSection extends ConsumerStatefulWidget {
   const PrivacyScoreSection({super.key});
@@ -13,22 +15,27 @@ class PrivacyScoreSection extends ConsumerStatefulWidget {
   ConsumerState<PrivacyScoreSection> createState() => _PrivacyScoreSectionState();
 }
 
-class _PrivacyScoreSectionState extends ConsumerState<PrivacyScoreSection> {
+class _PrivacyScoreSectionState extends ConsumerState<PrivacyScoreSection> with LoggerMixin {
   int privacyScore = 0;
   bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
+    logInfo('Initializing PrivacyScoreSection');
     fetchPrivacyScore();
   }
 
   Future<void> fetchPrivacyScore() async {
     final token = ref.read(authProvider).token;
-    if (token == null) return;
+    if (token == null) {
+      logError('Token is null, cannot fetch privacy score');
+      return;
+    }
 
     final dio = Dio();
     try {
+      logDebug('Fetching privacy score from ${ApiEndpoints.getOverallPrivacyScore}');
       final response = await dio.get(
         ApiEndpoints.getOverallPrivacyScore,
         options: Options(
@@ -39,99 +46,124 @@ class _PrivacyScoreSectionState extends ConsumerState<PrivacyScoreSection> {
       );
 
       if (response.statusCode == 200) {
+        logInfo('Successfully fetched privacy score: ${response.data}');
         setState(() {
           privacyScore = response.data;
           isLoading = false;
         });
       } else {
+        logError('Failed to fetch privacy score. Status code: ${response.statusCode}');
         setState(() {
           isLoading = false;
         });
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      logError('Error fetching privacy score', e, stackTrace);
       setState(() {
         isLoading = false;
       });
     }
   }
- @override
- Widget build(BuildContext context) {
-   return Column(
-     children: [
-       Center(
-         child: GestureDetector(
-           onTap: () {},
-           child: Container(
-             width: 200,
-             height: 200,
-             decoration: BoxDecoration(
-               shape: BoxShape.circle,
-               color: Colors.white,
-               boxShadow: [
-                 BoxShadow(
-                   color: Colors.grey.withOpacity(0.2),
-                   spreadRadius: 5,
-                   blurRadius: 7,
-                   offset: const Offset(0, 3),
-                 ),
-               ],
-             ),
-             child: Stack(
-               clipBehavior: Clip.none,
-               children: [
-                 Positioned(
-                   left: -20,
-                   right: -20,
-                   top: -20,
-                   bottom: -20,
-                   child: Container(
-                     decoration: BoxDecoration(
-                       shape: BoxShape.circle,
-                       color: Colors.white.withOpacity(0.4),
-                     ),
-                   ),
-                 ),
-                 isLoading
-                     ? const Center(child: CircularProgressIndicator())
-                     : SimpleRadialGauge(value: privacyScore.toDouble()),
-               ],
-             ),
-           ),
-         ),
-       ),
-       const SizedBox(height: 20),
-       Center(
-         child: TextButton(
-           onPressed: () => Navigator.push(
-             context,
-             MaterialPageRoute(
-               builder: (context) => const PrivacyScoreDetail(),
-             ),
-           ),
-           style: TextButton.styleFrom(
-             backgroundColor: Colors.grey[100],
-             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-             shape: RoundedRectangleBorder(
-               borderRadius: BorderRadius.circular(20),
-             ),
-           ),
-           child: Row(
-             mainAxisSize: MainAxisSize.min,
-             children: const [
-               Text(
-                 'See How You Scored',
-                 style: TextStyle(
-                   color: Colors.black87,
-                   fontSize: 16,
-                 ),
-               ),
-               SizedBox(width: 8),
-               Icon(Icons.arrow_forward, size: 20, color: Colors.black87),
-             ],
-           ),
-         ),
-       ),
-     ],
-   );
- }
+
+  @override
+  Widget build(BuildContext context) {
+    logDebug('Building PrivacyScoreSection widget');
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (isLoading)
+            const SizedBox(
+              height: 200,
+              child: Center(child: CircularProgressIndicator()),
+            )
+          else
+            Column(
+              children: [
+                const SizedBox(height: 16),
+                SimpleRadialGauge(value: privacyScore.toDouble()),
+                const Column(
+                  children: [
+                    Text(
+                      'Good',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Color(0xFF6C5CE7),
+                      ),
+                    ),
+                    Text(
+                      '0 pts',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '100',
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 12,
+                      ),
+                    ),
+                    Text(
+                      '850',
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          const SizedBox(height: 24),
+          ElevatedButton(
+            onPressed: () {
+              logInfo('Navigating to PrivacyScoreDetail');
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const PrivacyScoreDetail(),
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF6C5CE7),
+              minimumSize: const Size(double.infinity, 48),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: const Text(
+              'View Report',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+        ],
+      ),
+    );
+  }
 }
