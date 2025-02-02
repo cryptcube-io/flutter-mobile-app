@@ -17,12 +17,12 @@ class _SimpleRadialGaugeState extends State<SimpleRadialGauge> {
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      height: 115, // Ensure height is proportional to the arc
+      height: 115,
       child: FittedBox(
         fit: BoxFit.fitWidth,
         child: SizedBox(
-          width: 90, // Container width
-          height: 50, // Container height
+          width: 90,
+          height: 50,
           child: SfRadialGauge(
             axes: <RadialAxis>[
               RadialAxis(
@@ -30,42 +30,70 @@ class _SimpleRadialGaugeState extends State<SimpleRadialGauge> {
                 maximum: 850,
                 showLabels: false,
                 showTicks: false,
-                radiusFactor: 0.9, // Adjust radiusFactor to fit the box edges
+                radiusFactor: 1.7,
+                centerY: 0.85,
                 axisLineStyle: AxisLineStyle(
                   thickness: 0.1,
                   color: Colors.grey.withOpacity(0.1),
                   thicknessUnit: GaugeSizeUnit.factor,
                 ),
-                pointers: <GaugePointer>[
-                  RangePointer(
-                    value: widget.value,
-                    width: 0.1,
+                ranges: <GaugeRange>[
+
+                  
+                  GaugeRange(
+                    startValue: 0,
+                    endValue: widget.value,
                     sizeUnit: GaugeSizeUnit.factor,
-                    enableAnimation: true,
-                    animationDuration: 1000,
-                    color: const Color(0xFF6C5CE7),
-                  ),
+                    startWidth: 0.1,
+                    endWidth: 0.1,
+                    gradient: const SweepGradient(
+                      colors: [
+                        Color(0xFFFF6B78),
+                        Color(0xFF6C5CE7),
+                      ],
+                      stops: [0.25, 0.75]
+                    ),
+                  )
                 ],
-                startAngle: 180, // Start at the left edge
-                endAngle: 0, // End at the right edge
+                startAngle: 180,
+                endAngle: 0,
                 annotations: <GaugeAnnotation>[
                   GaugeAnnotation(
+                    widget: const Text(
+                      'Good',
+                      style: TextStyle(
+                        fontSize: 4,
+                        color: Color(0xFF6C5CE7),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    angle: 90,
+                    positionFactor: 0.4,
+                  ),
+                  GaugeAnnotation(axisValue: 50, positionFactor: 0.4,
                     widget: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
                           '${widget.value.toInt()}',
                           style: const TextStyle(
-                            fontSize: 20,
+                            fontSize: 5,
                             fontWeight: FontWeight.bold,
                             color: Colors.black87,
+                          ),
+                        ),
+                        const Text(
+                          '0 pts',
+                          style: TextStyle(
+                            fontSize: 3,
+                            color: Colors.grey,
                           ),
                         ),
                       ],
                     ),
                     angle: 90,
-                    positionFactor: 0.0, // Adjust annotation position if needed
                   ),
+                  
                 ],
               ),
             ],

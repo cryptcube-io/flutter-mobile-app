@@ -44,7 +44,7 @@ class CustomNavBar extends StatelessWidget {
                 'lib/icons/svg/square-3-stack-3d.svg',
                 'Insights',
                 3,
-                navigationService.currentIndex == 0,
+                navigationService.currentIndex == 3,
               ),
               _buildNavItem(
                 context,

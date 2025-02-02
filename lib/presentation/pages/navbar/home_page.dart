@@ -56,11 +56,11 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 20),
-              HeaderSection(userName: "John"),
-              SizedBox(height: 40),
+              // SizedBox(height: 20),
+              // HeaderSection(userName: "John"),
+              SizedBox(height: 80),
               PrivacyScoreSection(),
-              SizedBox(height: 40),
+              SizedBox(height: 20),
               PrivacyShieldSection(),
             ],
           ),
