@@ -8,8 +8,8 @@ class PercentageShieldIcon extends StatelessWidget {
 
   const PercentageShieldIcon({
     required this.percentage,
-    this.color = CupertinoColors.systemBlue,
-    this.size = 24.0,
+    this.color = const Color(0xFF3A2985),
+    this.size = 75.0,
   });
 
   @override
@@ -39,11 +39,11 @@ class PercentageShieldIcon extends StatelessWidget {
           Center(
             // Center the text
             child: Text(
-              '${percentage.round()}%', 
+              '${percentage.round()}%',
               style: TextStyle(
-                fontSize: size * 0.20, 
+                fontSize: size * 0.20,
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
+                color: Colors.white,
               ),
             ),
           ),

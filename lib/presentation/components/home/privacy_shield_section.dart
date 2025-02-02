@@ -1,77 +1,83 @@
+import 'package:Cryptcube_mobile_app/icons/home_page_shield.dart';
 import 'package:flutter/material.dart';
-import '../../../icons/home_page_shield.dart';
-import '../../pages/shield/privacy_shield.dart';
 
 class PrivacyShieldSection extends StatelessWidget {
   const PrivacyShieldSection({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF8F7FF),
-        borderRadius: BorderRadius.circular(16),
+    return Card(
+      color: const Color(0xFFFFFFFF),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Privacy Shield',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  'Lorem ipsum dolor amet, consectetur adipiscing elit. Parturient suspendisse ipsum mi scelerisque nascetur present molestie.',
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Privacy Shield',
                   style: TextStyle(
-                    color: Colors.grey[600],
-                    height: 1.5,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-              ),
-              const SizedBox(width: 24),
-              Container(
-                width: 64,
-                height: 64,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF6C5CE7).withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Lorem ipsum dolor amet, consectetur adipiscing elit. Parturient suspendisse ipsum mi scelerisque nascetur present molestie.',
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          height: 1.4,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF6C5CE7).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          PercentageShieldIcon(percentage: 75),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                child: const Center(
+              ],
+            ),
+          ),
+          Card(
+            margin: EdgeInsets.zero,
+            color: const Color(0xFFEEEDFC),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: InkWell(
+              onTap: () {},
+              borderRadius: BorderRadius.circular(12),
+              child: const Padding(
+                padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+                child: Center(
                   child: Text(
-                    '75%',
+                    'What this Means?',
                     style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF6C5CE7),
+                      color: Color(0xFF6044de),
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          TextButton(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const PrivacyShield(),
-              ),
-            ),
-            style: TextButton.styleFrom(
-              padding: EdgeInsets.zero,
-            ),
-            child: const Text(
-              'What this Means?',
-              style: TextStyle(
-                color: Color(0xFF6C5CE7),
-                fontWeight: FontWeight.w500,
               ),
             ),
           ),

@@ -12,10 +12,12 @@ class PrivacyScoreSection extends ConsumerStatefulWidget {
   const PrivacyScoreSection({super.key});
 
   @override
-  ConsumerState<PrivacyScoreSection> createState() => _PrivacyScoreSectionState();
+  ConsumerState<PrivacyScoreSection> createState() =>
+      _PrivacyScoreSectionState();
 }
 
-class _PrivacyScoreSectionState extends ConsumerState<PrivacyScoreSection> with LoggerMixin {
+class _PrivacyScoreSectionState extends ConsumerState<PrivacyScoreSection>
+    with LoggerMixin {
   int privacyScore = 0;
   bool isLoading = true;
 
@@ -35,7 +37,8 @@ class _PrivacyScoreSectionState extends ConsumerState<PrivacyScoreSection> with 
 
     final dio = Dio();
     try {
-      logDebug('Fetching privacy score from ${ApiEndpoints.getOverallPrivacyScore}');
+      logDebug(
+          'Fetching privacy score from ${ApiEndpoints.getOverallPrivacyScore}');
       final response = await dio.get(
         ApiEndpoints.getOverallPrivacyScore,
         options: Options(
@@ -52,7 +55,8 @@ class _PrivacyScoreSectionState extends ConsumerState<PrivacyScoreSection> with 
           isLoading = false;
         });
       } else {
-        logError('Failed to fetch privacy score. Status code: ${response.statusCode}');
+        logError(
+            'Failed to fetch privacy score. Status code: ${response.statusCode}');
         setState(() {
           isLoading = false;
         });
@@ -92,27 +96,28 @@ class _PrivacyScoreSectionState extends ConsumerState<PrivacyScoreSection> with 
           else
             Column(
               children: [
-                const SizedBox(height: 16),
                 SimpleRadialGauge(value: privacyScore.toDouble()),
-                const Column(
-                  children: [
-                    Text(
-                      'Good',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Color(0xFF6C5CE7),
+                Transform.translate(
+                  offset: const Offset(0, -40),
+                  child: const Column(
+                    children: [
+                      Text(
+                        'Good',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Color(0xFF6C5CE7),
+                        ),
                       ),
-                    ),
-                    Text(
-                      '0 pts',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
+                      Text(
+                        '0 pts',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 8),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -132,36 +137,35 @@ class _PrivacyScoreSectionState extends ConsumerState<PrivacyScoreSection> with 
                     ),
                   ],
                 ),
+                ElevatedButton(
+                  onPressed: () {
+                    logInfo('Navigating to PrivacyScoreDetail');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const PrivacyScoreDetail(),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF6C5CE7),
+                    minimumSize: const Size(double.infinity, 48),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    'View Report',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
               ],
             ),
-          const SizedBox(height: 24),
-          ElevatedButton(
-            onPressed: () {
-              logInfo('Navigating to PrivacyScoreDetail');
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const PrivacyScoreDetail(),
-                ),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF6C5CE7),
-              minimumSize: const Size(double.infinity, 48),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: const Text(
-              'View Report',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-              ),
-            ),
-          ),
-          const SizedBox(height: 24),
         ],
       ),
     );
