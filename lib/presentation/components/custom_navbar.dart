@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../services/navigation_service.dart';
 
 class CustomNavBar extends StatelessWidget {
@@ -26,28 +27,28 @@ class CustomNavBar extends StatelessWidget {
             children: [
               _buildNavItem(
                 context,
-                Icons.home,
+                'lib/icons/svg/home.svg',
                 'Home',
                 1,
                 navigationService.currentIndex == 1,
               ),
               _buildNavItem(
                 context,
-                Icons.chat_bubble_outline,
+                'lib/icons/svg/chat-bubble-left-right.svg',
                 'Chat',
                 2,
                 navigationService.currentIndex == 2,
               ),
               _buildNavItem(
                 context,
-                Icons.insights,
+                'lib/icons/svg/square-3-stack-3d.svg',
                 'Insights',
-                0,
+                3,
                 navigationService.currentIndex == 0,
               ),
               _buildNavItem(
                 context,
-                Icons.person_outline,
+                'lib/icons/svg/user-circle.svg',
                 'You',
                 4,
                 navigationService.currentIndex == 4,
@@ -61,7 +62,7 @@ class CustomNavBar extends StatelessWidget {
 
   Widget _buildNavItem(
     BuildContext context,
-    IconData icon,
+    String svgPath,
     String label,
     int index,
     bool isSelected,
@@ -75,16 +76,20 @@ class CustomNavBar extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            icon,
-            color: isSelected ? const Color(0xFF6C5CE7) : Colors.grey,
-            size: 24,
+          SvgPicture.asset(
+            svgPath,
+            width: 24,
+            height: 24,
+            colorFilter: ColorFilter.mode(
+              isSelected ? const Color(0xFF3A2985) : Colors.grey,
+              BlendMode.srcIn,
+            ),
           ),
           const SizedBox(height: 4),
           Text(
             label,
             style: TextStyle(
-              color: isSelected ? const Color(0xFF6C5CE7) : Colors.grey,
+              color: isSelected ? const Color(0xFF3A2985) : Colors.grey,
               fontSize: 12,
               fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
             ),
