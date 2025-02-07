@@ -6,7 +6,6 @@ import '../../../services/auth_notifier_service.dart';
 import '../../../services/logger_service.dart';
 import '../../pages/score/privacy_score_detail.dart';
 import '../../../icons/privacy_score_gauge.dart';
-import 'package:intl/intl.dart';
 
 class PrivacyScoreSection extends ConsumerStatefulWidget {
   const PrivacyScoreSection({super.key});
@@ -107,34 +106,7 @@ class _PrivacyScoreSectionState extends ConsumerState<PrivacyScoreSection> with 
           else
             Column(
               children: [
-                SimpleRadialGauge(value: privacyScore.toDouble()),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      '100',
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 12,
-                      ),
-                    ),
-                    Text(
-                      'Last updated on ${DateFormat('MM/dd/yyyy').format(DateTime.now())}',
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 12,
-                      ),
-                    ),
-                    Text(
-                      '850',
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
+                PrivacyScoreGauge(value: privacyScore.toDouble()),
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () {
