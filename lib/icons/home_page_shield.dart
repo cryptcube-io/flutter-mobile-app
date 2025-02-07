@@ -37,7 +37,7 @@ class PercentageShieldIcon extends StatelessWidget {
             ),
           ),
           Center(
-            // Center the text
+            
             child: Text(
               '${percentage.round()}%',
               style: TextStyle(

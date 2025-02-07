@@ -43,7 +43,15 @@ class PrivacyShieldSection extends StatelessWidget {
                       width: 80,
                       height: 80,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF6C5CE7).withOpacity(0.1),
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            const Color(0xFFe1dcf7),
+                            const Color(0xFFeee6f5),
+                            const Color(0xFFfbeff3),
+                          ],
+                        ),
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Stack(

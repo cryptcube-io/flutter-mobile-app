@@ -101,6 +101,7 @@ class _PrivacyScoreSectionState extends ConsumerState<PrivacyScoreSection> with 
               color: Colors.grey[600],
             ),
           ),
+          const SizedBox(height: 25),
           if (isLoading)
             const Center(child: CircularProgressIndicator())
           else

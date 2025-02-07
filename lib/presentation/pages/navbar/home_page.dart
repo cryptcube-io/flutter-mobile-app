@@ -49,20 +49,33 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // SizedBox(height: 20),
-              // HeaderSection(userName: "John"),
-              SizedBox(height: 80),
-              PrivacyScoreSection(),
-              SizedBox(height: 20),
-              PrivacyShieldSection(),
+      backgroundColor:
+          Colors.transparent, 
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFFf0effd), 
+              Color(0xFFFFFFFF), 
             ],
+          ),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // SizedBox(height: 20),
+                // HeaderSection(userName: "John"),
+                SizedBox(height: 80),
+                PrivacyScoreSection(),
+                SizedBox(height: 20),
+                PrivacyShieldSection(),
+              ],
+            ),
           ),
         ),
       ),
