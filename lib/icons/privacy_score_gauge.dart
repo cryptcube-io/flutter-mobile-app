@@ -3,11 +3,11 @@ import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 class SimpleRadialGauge extends StatefulWidget {
   final double value;
-
+  
   SimpleRadialGauge({
     required this.value,
   });
-
+  
   @override
   _SimpleRadialGaugeState createState() => _SimpleRadialGaugeState();
 }
@@ -38,8 +38,6 @@ class _SimpleRadialGaugeState extends State<SimpleRadialGauge> {
                   thicknessUnit: GaugeSizeUnit.factor,
                 ),
                 ranges: <GaugeRange>[
-
-                  
                   GaugeRange(
                     startValue: 0,
                     endValue: widget.value,
@@ -59,25 +57,25 @@ class _SimpleRadialGaugeState extends State<SimpleRadialGauge> {
                 endAngle: 0,
                 annotations: <GaugeAnnotation>[
                   GaugeAnnotation(
-                    widget: const Text(
-                      'Good',
-                      style: TextStyle(
-                        fontSize: 4,
-                        color: Color(0xFF6C5CE7),
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    angle: 90,
-                    positionFactor: 0.4,
-                  ),
-                  GaugeAnnotation(axisValue: 50, positionFactor: 0.4,
+                    axisValue: 425,
+                    positionFactor: 0,
+                    verticalAlignment: GaugeAlignment.far,
                     widget: Column(
                       mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        const Text(
+                          'Good',
+                          style: TextStyle(
+                            fontSize: 5,
+                            color: Color(0xFF6C5CE7),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                         Text(
                           '${widget.value.toInt()}',
                           style: const TextStyle(
-                            fontSize: 5,
+                            fontSize: 10,
                             fontWeight: FontWeight.bold,
                             color: Colors.black87,
                           ),
@@ -85,15 +83,13 @@ class _SimpleRadialGaugeState extends State<SimpleRadialGauge> {
                         const Text(
                           '0 pts',
                           style: TextStyle(
-                            fontSize: 3,
+                            fontSize: 5,
                             color: Colors.grey,
                           ),
                         ),
                       ],
                     ),
-                    angle: 90,
                   ),
-                  
                 ],
               ),
             ],
