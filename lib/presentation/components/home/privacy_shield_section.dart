@@ -1,6 +1,8 @@
 import 'package:Cryptcube_mobile_app/icons/home_page_shield.dart';
 import 'package:flutter/material.dart';
 
+import '../shared/standard_button.dart';
+
 class PrivacyShieldSection extends StatelessWidget {
   const PrivacyShieldSection({super.key});
 
@@ -66,28 +68,9 @@ class PrivacyShieldSection extends StatelessWidget {
               ],
             ),
           ),
-          Card(
-            margin: EdgeInsets.zero,
-            color: const Color(0xFFEEEDFC),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: InkWell(
-              onTap: () {},
-              borderRadius: BorderRadius.circular(12),
-              child: const Padding(
-                padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-                child: Center(
-                  child: Text(
-                    'What this Means?',
-                    style: TextStyle(
-                      color: Color(0xFF6044de),
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+          StandardButton(
+            text: 'What this Means?',
+            onTap: () {},
           ),
         ],
       ),
