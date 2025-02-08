@@ -27,7 +27,7 @@ class _PrivacyScoreDetailState extends ConsumerState<PrivacyScoreDetail> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF3F4F6),
       body: SafeArea(
         child: Column(
           children: [
@@ -38,18 +38,23 @@ class _PrivacyScoreDetailState extends ConsumerState<PrivacyScoreDetail> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      IconButton(
-                        icon: const Icon(Icons.arrow_back_ios),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'Report Details',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
+                      Row(
+                        children: [
+                          IconButton(
+                            padding: EdgeInsets.zero,
+                            icon: const Icon(Icons.arrow_back_ios),
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                          Expanded(
+                            child: Text(
+                              'Report Details',
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                       _buildScoreCard(),
                       const SizedBox(height: 24),
@@ -92,39 +97,41 @@ class _PrivacyScoreDetailState extends ConsumerState<PrivacyScoreDetail> {
   }
 
   Widget _buildAppsList() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Apps Affecting Your Score (${apps.length})',
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        const SizedBox(height: 16),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: apps.length,
-          itemBuilder: (context, index) {
-            return _buildAppItem(apps[index]);
-          },
-        ),
-        const SizedBox(height: 16),
-        StandardButton(
-          text: 'View All Apps',
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const AppList(),
+    return Card(
+        color: Colors.white,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Apps Affecting Your Score (${apps.length})',
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
               ),
-            );
-          },
-        ),
-      ],
-    );
+            ),
+            const SizedBox(height: 16),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: apps.length,
+              itemBuilder: (context, index) {
+                return _buildAppItem(apps[index]);
+              },
+            ),
+            const SizedBox(height: 16),
+            StandardButton(
+              text: 'View All Apps',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AppList(),
+                  ),
+                );
+              },
+            ),
+          ],
+        ));
   }
 
   Widget _buildAppItem(AppData app) {
@@ -145,39 +152,30 @@ class _PrivacyScoreDetailState extends ConsumerState<PrivacyScoreDetail> {
   }
 
   Widget _buildPrivacyFactorCard() {
-    return InkWell(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const PrivacyScoreFactors(),
+    return Card(
+        color: Colors.white,
+        child: InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const PrivacyScoreFactors(),
+              ),
+            );
+          },
+          child: ListTile(
+            leading: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.blue.shade50,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(Icons.security, color: Color(0xFF6C5CE7)),
+            ),
+            title: const Text('Privacy Score Factor'),
+            subtitle: const Text('Lorem ipsum has been the industry\'s'),
           ),
-        );
-      },
-      child: ListTile(
-        leading: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.blue.shade50,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: const Icon(Icons.security, color: Color(0xFF6C5CE7)),
-        ),
-        title: const Text('Privacy Score Factor'),
-        subtitle: const Text('Lorem ipsum has been the industry\'s'),
-        trailing: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: const BoxDecoration(
-            color: Colors.amber,
-            shape: BoxShape.circle,
-          ),
-          child: const Text(
-            'S',
-            style: TextStyle(color: Colors.white),
-          ),
-        ),
-      ),
-    );
+        ));
   }
 }
 
