@@ -16,32 +16,31 @@ class AppListItem extends StatelessWidget {
         horizontal: 16,
         vertical: 8,
       ),
-      leading: Container(
+      leading: SizedBox(
         width: 48,
         height: 48,
-        decoration: BoxDecoration(
-          color: app.color,
-          borderRadius: BorderRadius.circular(12),
-        ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(12),
-          child: app.iconBytes != null
-              ? Image.memory(
-                  app.iconBytes!,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Icon(
-                      _iconManager.getFallbackIcon(app.name),
-                      color: Colors.white,
-                      size: 24,
-                    );
-                  },
-                )
-              : Icon(
-                  _iconManager.getFallbackIcon(app.name),
-                  color: Colors.white,
-                  size: 24,
-                ),
+          child: Container(
+            color: Colors.white,
+            child: app.iconBytes != null
+                ? Image.memory(
+                    app.iconBytes!,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Icon(
+                        _iconManager.getFallbackIcon(app.name),
+                        color: Colors.white,
+                        size: 24,
+                      );
+                    },
+                  )
+                : Icon(
+                    _iconManager.getFallbackIcon(app.name),
+                    color: Colors.white,
+                    size: 24,
+                  ),
+          ),
         ),
       ),
       title: Text(
