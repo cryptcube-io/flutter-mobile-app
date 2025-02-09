@@ -163,23 +163,23 @@ class _AppDetailState extends ConsumerState<AppDetail> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildAppHeader(),
-        const SizedBox(height: 20),
+        const SizedBox(height: 5),
         const AppScoreCard(),
-        const SizedBox(height: 24),
-        if (explanation.isNotEmpty) Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text(
-            explanation,
-            style: const TextStyle(
-              fontSize: 14,
-              color: Colors.black87,
-              height: 1.5,
-            ),
-          ),
-        ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 15),
+        // if (explanation.isNotEmpty) Padding(
+        //   padding: const EdgeInsets.symmetric(horizontal: 16),
+        //   child: Text(
+        //     explanation,
+        //     style: const TextStyle(
+        //       fontSize: 14,
+        //       color: Colors.black87,
+        //       height: 1.5,
+        //     ),
+        //   ),
+        // ),
+        const SizedBox(height: 8),
         const DataCollectionSection(),
-        const SizedBox(height: 24),
+        const SizedBox(height: 20),
         BottomActionButtons(appName: widget.appName,iconBytes: widget.iconBytes),
       ],
     );

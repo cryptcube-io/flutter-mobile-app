@@ -1,3 +1,4 @@
+import 'package:Cryptcube_mobile_app/config/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'dart:typed_data';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -162,7 +163,7 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.contentAreaBackground,
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: Column(

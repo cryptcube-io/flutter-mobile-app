@@ -14,6 +14,7 @@ class ChatInputField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
+        color: Colors.white,
         border: Border(
           top: BorderSide(color: Colors.grey[300]!),
         ),
