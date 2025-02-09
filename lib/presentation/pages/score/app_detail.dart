@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dio/dio.dart';
 import '../../../config/api_endpoints.dart';
+import '../../../config/theme/app_colors.dart';
 import '../../../services/auth_notifier_service.dart';
 import '../../components/appDetailPage/app_score_card.dart';
 import '../../components/appDetailPage/bottom_action_buttons.dart';
 import '../../components/appDetailPage/data_collection_section.dart';
-import '../../components/appDetailPage/header_section.dart';
 import '../../components/custom_navbar.dart';
+import '../../components/shared/header.dart';
 
 class AppDetail extends ConsumerStatefulWidget {
   final String appName;
@@ -62,66 +63,73 @@ class _AppDetailState extends ConsumerState<AppDetail> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 20),
-                    AppHeaderSection(appName: widget.appName),
-                    const SizedBox(height: 20),
-                    const AppScoreCard(),
-                    const SizedBox(height: 24),
-                    if (isLoading)
-                      const Center(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
-                          child: CircularProgressIndicator(),
-                        ),
-                      )
-                    else if (explanation.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[100],
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.1),
-                                spreadRadius: 2,
-                                blurRadius: 4,
-                                offset: const Offset(0, 2),
+      backgroundColor: Colors.transparent,
+      body: Container(
+        color: Colors.white,
+        child: SafeArea(
+          child: Column(
+            children: [
+              CustomHeader(
+                title: 'App Details',
+                onBackPressed: () => Navigator.pop(context),
+              ),
+              Expanded(
+                child: Container(
+                  color: AppColors.contentAreaBackground,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 20),
+                        const AppScoreCard(),
+                        const SizedBox(height: 24),
+                        if (isLoading)
+                          const Center(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 20),
+                              child: CircularProgressIndicator(),
+                            ),
+                          )
+                        else if (explanation.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[100],
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.1),
+                                    spreadRadius: 2,
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                          child: Text(
-                            explanation,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              color: Colors.black87,
-                              height: 1.5,
+                              child: Text(
+                                explanation,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.black87,
+                                  height: 1.5,
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                    const SizedBox(height: 24),
-                    const DataCollectionSection(),
-                    const SizedBox(height: 24),
-                    BottomActionButtons(appName: widget.appName),
-                  ],
+                        const SizedBox(height: 24),
+                        const DataCollectionSection(),
+                        const SizedBox(height: 24),
+                        BottomActionButtons(appName: widget.appName),
+                      ],
+                    ),
+                  ),
                 ),
               ),
-            ),
-             CustomNavBar(),
-          ],
+              CustomNavBar(),
+            ],
+          ),
         ),
       ),
     );
