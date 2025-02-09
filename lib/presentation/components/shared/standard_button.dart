@@ -24,13 +24,13 @@ class StandardButton extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+          padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 16),
           child: Center(
             child: Text(
               text,
               style: const TextStyle(
                 color: Color(0xFF6044de),
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w700,
               ),
             ),
           ),

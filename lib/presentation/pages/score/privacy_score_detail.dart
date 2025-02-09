@@ -36,14 +36,17 @@ class _PrivacyScoreDetailState extends ConsumerState<PrivacyScoreDetail> {
 
   Future<void> _loadApps() async {
     try {
-      final appItems = await _appLoader.loadApps('your_token_here', pageSize: 3);
+      final appItems =
+          await _appLoader.loadApps('your_token_here', pageSize: 3);
       setState(() {
-        apps = appItems.map((item) => AppData(
-          item.name,
-          int.parse(item.score.split('/')[0]),
-          item.packageName,
-          item.iconBytes,
-        )).toList();
+        apps = appItems
+            .map((item) => AppData(
+                  item.name,
+                  int.parse(item.score.split('/')[0]),
+                  item.packageName,
+                  item.iconBytes,
+                ))
+            .toList();
         isLoading = false;
       });
     } catch (e) {
@@ -113,7 +116,7 @@ class _PrivacyScoreDetailState extends ConsumerState<PrivacyScoreDetail> {
             ),
           ),
           const SizedBox(height: 34),
-          PrivacyScoreGauge(value: 660),
+          PrivacyScoreGauge(value: 600),
         ],
       ),
     );
@@ -137,12 +140,13 @@ class _PrivacyScoreDetailState extends ConsumerState<PrivacyScoreDetail> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
+            padding:
+                const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
             child: Text(
               'Apps Affecting Your Score (${isLoading ? "..." : apps.length})',
               style: const TextStyle(
                 fontSize: 20,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w400,
                 color: Color(0xFF6B7280),
                 height: 1.5,
                 letterSpacing: 0,
@@ -164,7 +168,7 @@ class _PrivacyScoreDetailState extends ConsumerState<PrivacyScoreDetail> {
                 const Divider(height: 1, indent: 16, endIndent: 16),
             ],
           ],
-          const SizedBox(height: 16),
+          const SizedBox(height: 6),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: StandardButton(
@@ -189,7 +193,7 @@ class _PrivacyScoreDetailState extends ConsumerState<PrivacyScoreDetail> {
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(
         horizontal: 16,
-        vertical: 8,
+        vertical: 0,
       ),
       leading: SizedBox(
         width: 48,
@@ -320,8 +324,28 @@ class _PrivacyScoreDetailState extends ConsumerState<PrivacyScoreDetail> {
             ),
             child: const Icon(Icons.security, color: Color(0xFF6C5CE7)),
           ),
-          title: const Text('Privacy Score Factor'),
-          subtitle: const Text('Lorem ipsum has been the industry\'s'),
+          title: const Text(
+            'Privacy Score Factor',
+            style: TextStyle(
+              fontSize: 16, // Based on height
+              fontWeight: FontWeight.w600, // Semi-bold
+              height: 1.5, // Line height
+              letterSpacing: 0, // Letter spacing
+              fontFamily: 'Heading', // Custom font reference
+              color: Color(0xFF111827), // Hex color #111827
+            ),
+          ),
+          subtitle: const Text(
+            'Lorem Ipsum has been the industry\'s.',
+            style: TextStyle(
+              fontSize: 12, // Based on height
+              fontWeight: FontWeight.w400, // Regular weight
+              height: 1.5, // Line height
+              letterSpacing: 0, // No letter spacing
+              fontFamily: 'Body', // Custom font reference
+              color: Color(0xFF6B7280), // Hex color #6B7280
+            ),
+          ),
         ),
       ),
     );
