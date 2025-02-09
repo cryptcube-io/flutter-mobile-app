@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 
 class AppScoreCard extends StatelessWidget {
   const AppScoreCard({super.key});
+
+  String _getRandomUsage() {
+    final random = Random();
+    return "${random.nextInt(12)}hours/day";
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(vertical: 20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.1),
@@ -22,57 +28,98 @@ class AppScoreCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: const Color(0xFF25D366),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(
-              Icons.chat_bubble,
-              color: Colors.white,
-              size: 24,
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Privacy Score:',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.black54,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  RichText(
+                    text: const TextSpan(
+                      children: [
+                        TextSpan(
+                          text: '310',
+                          style: TextStyle(
+                            fontSize: 24,
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextSpan(
+                          text: '/850',
+                          style: TextStyle(
+                            fontSize: 24,
+                            color: Colors.black54,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'Your privacy is at risk',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.red,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-          const SizedBox(width: 16),
+          Container(
+            width: 1,
+            height: 120,
+            color: Colors.grey.withOpacity(0.2),
+          ),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Date of Installation: 22-12-24',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.black87,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Avg. App Usage',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.black54,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                RichText(
-                  text: const TextSpan(
-                    text: 'Privacy Score: ',
+                  const SizedBox(height: 4),
+                  Text(
+                    _getRandomUsage(),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'App Installed on:',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.black54,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    '01/22/2025',
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.black87,
+                      fontWeight: FontWeight.w500,
                     ),
-                    children: [
-                      TextSpan(
-                        text: '604',
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      TextSpan(
-                        text: '/800',
-                        style: TextStyle(
-                          color: Colors.black54,
-                        ),
-                      ),
-                    ],
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],

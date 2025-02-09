@@ -83,41 +83,41 @@ class _AppDetailState extends ConsumerState<AppDetail> {
                         const SizedBox(height: 20),
                         const AppScoreCard(),
                         const SizedBox(height: 24),
-                        if (isLoading)
-                          const Center(
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 20),
-                              child: CircularProgressIndicator(),
-                            ),
-                          )
-                        else if (explanation.isNotEmpty)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: Colors.grey[100],
-                                borderRadius: BorderRadius.circular(12),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.1),
-                                    spreadRadius: 2,
-                                    blurRadius: 4,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                              child: Text(
-                                explanation,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.black87,
-                                  height: 1.5,
-                                ),
-                              ),
-                            ),
-                          ),
+                        // if (isLoading)
+                        //   const Center(
+                        //     child: Padding(
+                        //       padding: EdgeInsets.symmetric(horizontal: 20),
+                        //       child: CircularProgressIndicator(),
+                        //     ),
+                        //   )
+                        // else if (explanation.isNotEmpty)
+                        //   Padding(
+                        //     padding: const EdgeInsets.symmetric(horizontal: 20),
+                        //     child: Container(
+                        //       width: double.infinity,
+                        //       padding: const EdgeInsets.all(16),
+                        //       decoration: BoxDecoration(
+                        //         color: Colors.grey[100],
+                        //         borderRadius: BorderRadius.circular(12),
+                        //         boxShadow: [
+                        //           BoxShadow(
+                        //             color: Colors.grey.withOpacity(0.1),
+                        //             spreadRadius: 2,
+                        //             blurRadius: 4,
+                        //             offset: const Offset(0, 2),
+                        //           ),
+                        //         ],
+                        //       ),
+                        //       child: Text(
+                        //         explanation,
+                        //         style: const TextStyle(
+                        //           fontSize: 16,
+                        //           color: Colors.black87,
+                        //           height: 1.5,
+                        //         ),
+                        //       ),
+                        //     ),
+                        //   ),
                         const SizedBox(height: 24),
                         const DataCollectionSection(),
                         const SizedBox(height: 24),
