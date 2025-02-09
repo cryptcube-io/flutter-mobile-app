@@ -69,7 +69,7 @@ class AuthService with LoggerMixin {
       }
 
       const defaultToken =
-          "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJncmVnQGNyeXB0Y3ViZS5pbyIsImlhdCI6MTczODQyNzUzNSwiZXhwIjoxNzM5NzIzNTM1fQ._C2qImLBF82wvNgfQ_LyDC7MvIfM9-x_Kz28OLpybN0";
+          "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJncmVnQGNyeXB0Y3ViZS5pbyIsImlhdCI6MTczOTEyNDE4MiwiZXhwIjoxNzQwNDIwMTgyfQ.CdblIg7UME_C8jLlcNMKJW67q1tOmt2UotiyHGN81z4";
       await saveToken(defaultToken);
       logInfo('Using default token due to authentication failure');
       return defaultToken;
