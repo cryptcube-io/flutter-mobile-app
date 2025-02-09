@@ -48,10 +48,18 @@ class _PrivacyScoreDetailState extends ConsumerState<PrivacyScoreDetail> {
                       children: [
                         _buildScoreCard(),
                         const SizedBox(height: 16),
-                        _buildAppsList(),
-                        const SizedBox(height: 16),
-                        _buildPrivacyFactorCard(),
-                        const SizedBox(height: 16),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildAppsList(),
+                              const SizedBox(height: 16),
+                              _buildPrivacyFactorCard(),
+                              const SizedBox(height: 16),
+                            ],
+                          ),
+                        )
                       ],
                     ),
                   ),
@@ -102,7 +110,8 @@ class _PrivacyScoreDetailState extends ConsumerState<PrivacyScoreDetail> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
+            padding:
+                const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
             child: Text(
               'Apps Affecting Your Score (${apps.length})',
               style: const TextStyle(
