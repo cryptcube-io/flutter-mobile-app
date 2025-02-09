@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import '../../../config/api_endpoints.dart';
 import '../../../services/auth_notifier_service.dart';
 import '../../components/custom_navbar.dart';
+import '../../components/shared/header.dart';
 import '../../components/shared/standard_button.dart';
 import '../../../icons/privacy_score_gauge.dart';
 import 'app_list.dart';
@@ -34,27 +35,14 @@ class _PrivacyScoreDetailState extends ConsumerState<PrivacyScoreDetail> {
             Expanded(
               child: SingleChildScrollView(
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(6.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          IconButton(
-                            padding: EdgeInsets.zero,
-                            icon: const Icon(Icons.arrow_back_ios),
-                            onPressed: () => Navigator.pop(context),
-                          ),
-                          Expanded(
-                            child: Text(
-                              'Report Details',
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
+                      
+                      CustomHeader(
+                        title: 'Report Details',
+                        onBackPressed: () => Navigator.pop(context),
                       ),
                       _buildScoreCard(),
                       const SizedBox(height: 24),

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'dart:typed_data';
 
 import '../../../models/app_item.dart';
 import '../../pages/score/app_detail.dart';
 import '../../pages/score/app_list.dart';
-
 
 class AppListItem extends StatelessWidget {
   final AppItem app;
@@ -38,10 +38,26 @@ class AppListItem extends StatelessWidget {
             color: app.color,
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Icon(
-            app.icon,
-            color: Colors.white,
-            size: 24,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: app.iconBytes != null
+                ? Image.memory(
+                    app.iconBytes!,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      print("Error loading icon for ${app.name}: $error");
+                      return Icon(
+                        Icons.android,
+                        color: Colors.white,
+                        size: 24,
+                      );
+                    },
+                  )
+                : Icon(
+                    Icons.android,
+                    color: Colors.white,
+                    size: 24,
+                  ),
           ),
         ),
         title: Text(

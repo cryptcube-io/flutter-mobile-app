@@ -5,6 +5,7 @@ import '../../../services/app_loader_service.dart';
 import '../../../services/auth_notifier_service.dart';
 import '../../components/appListPage/app_list_item.dart';
 import '../../components/custom_navbar.dart';
+import '../../components/shared/header.dart';
 
 class AppList extends ConsumerStatefulWidget {
   const AppList({super.key});
@@ -37,7 +38,8 @@ class _AppListState extends ConsumerState<AppList> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent * 0.8) {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent * 0.8) {
       _loadMoreApps();
     }
   }
@@ -45,7 +47,8 @@ class _AppListState extends ConsumerState<AppList> {
   Future<void> _loadApps() async {
     try {
       final token = ref.read(authProvider).token;
-      final loadedApps = await _appLoader.loadApps(token, page: 0, pageSize: pageSize);
+      final loadedApps =
+          await _appLoader.loadApps(token, page: 0, pageSize: pageSize);
       setState(() {
         apps = loadedApps;
         isLoading = false;
@@ -99,23 +102,44 @@ class _AppListState extends ConsumerState<AppList> {
     }
   }
 
+  List<AppItem> get frequentlyUsedApps => apps.take(3).toList();
+  List<AppItem> get otherApps => apps.skip(3).toList();
+
+  Widget _buildSection(String title, List<AppItem> sectionApps) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16.0),
+          child: Text(
+            title,
+            style: const TextStyle(
+              fontSize: 19,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: sectionApps.length,
+          itemBuilder: (context, index) => AppListItem(app: sectionApps[index]),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF3F4F6),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Padding(
-              padding: EdgeInsets.all(20.0),
-              child: Text(
-                'Apps affecting your Score',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+            CustomHeader(
+              title: 'Apps affecting your Score',
+              onBackPressed: () => Navigator.pop(context),
             ),
             if (isLoading)
               const Expanded(
@@ -125,21 +149,20 @@ class _AppListState extends ConsumerState<AppList> {
               )
             else
               Expanded(
-                child: ListView.builder(
+                child: ListView(
                   controller: _scrollController,
-                  itemCount: apps.length + (hasMoreItems ? 1 : 0),
                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                  itemBuilder: (context, index) {
-                    if (index == apps.length) {
-                      return const Padding(
+                  children: [
+                    _buildSection('Frequently Used Apps', frequentlyUsedApps),
+                    _buildSection('Other Applications', otherApps),
+                    if (hasMoreItems && isLoadingMore)
+                      const Padding(
                         padding: EdgeInsets.symmetric(vertical: 16.0),
                         child: Center(
                           child: CircularProgressIndicator(),
                         ),
-                      );
-                    }
-                    return AppListItem(app: apps[index]);
-                  },
+                      ),
+                  ],
                 ),
               ),
           ],

@@ -16,6 +16,10 @@ import android.content.pm.PackageInfo
 import android.annotation.SuppressLint
 import android.os.Build
 import android.content.pm.ApplicationInfo
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.drawable.BitmapDrawable
+import java.io.ByteArrayOutputStream
 
 enum class PermissionType {
     LOCATION_GPS,
@@ -177,19 +181,19 @@ class MainActivity: FlutterActivity() {
     }
 
     private fun getAppUsageStats(): Map<String, Long> {
-    val usageStatsManager = getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
-    val endTime = System.currentTimeMillis()
-    val startTime = 0L
-    
-    val usageMap = mutableMapOf<String, Long>()
-    
-    val stats = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_YEARLY, startTime, endTime)
-    stats?.forEach { stat ->
-        usageMap[stat.packageName] = stat.totalTimeInForeground
+        val usageStatsManager = getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
+        val endTime = System.currentTimeMillis()
+        val startTime = 0L
+        
+        val usageMap = mutableMapOf<String, Long>()
+        
+        val stats = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_YEARLY, startTime, endTime)
+        stats?.forEach { stat ->
+            usageMap[stat.packageName] = stat.totalTimeInForeground
+        }
+        
+        return usageMap
     }
-    
-    return usageMap
-}
 
     private fun hasUsageStatsPermission(): Boolean {
         val appOps = getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
@@ -219,6 +223,41 @@ class MainActivity: FlutterActivity() {
         return true
     }
 
+    private fun getInstalledAppsWithUsage(): List<Map<String, Any>> {
+    if (!hasUsageStatsPermission()) {
+        startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
+        throw SecurityException("Usage stats permission required")
+    }
+    
+    val apps = mutableListOf<Map<String, Any>>()
+    val usageStats = getAppUsageStats()
+    
+    // We only need basic app info now as device_apps will handle icons
+    val packages = packageManager.getInstalledPackages(PackageManager.GET_META_DATA)
+    
+    for (packageInfo in packages) {
+        try {
+            if (!isUserApp(packageInfo)) continue
+            
+            val appInfo = packageManager.getApplicationInfo(packageInfo.packageName, 0)
+            
+            val app = mutableMapOf<String, Any>()
+            app["packageName"] = packageInfo.packageName
+            app["appName"] = packageManager.getApplicationLabel(appInfo).toString()
+            app["usageTime"] = usageStats[packageInfo.packageName] ?: 0L
+            app["installDate"] = packageInfo.firstInstallTime
+            app["version"] = packageInfo.versionName ?: ""
+            
+            apps.add(app)
+            
+        } catch (e: Exception) {
+            continue
+        }
+    }
+    
+    return apps
+}
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
@@ -231,26 +270,7 @@ class MainActivity: FlutterActivity() {
                         return@setMethodCallHandler
                     }
                     try {
-                        val apps = mutableListOf<Map<String, Any>>()
-                        val packages = packageManager.getInstalledPackages(PackageManager.GET_META_DATA)
-                        val usageStats = getAppUsageStats()
-                        
-                        for (packageInfo in packages) {
-                            try {
-                                if (!isUserApp(packageInfo)) continue
-                                
-                                val appInfo = packageManager.getApplicationInfo(packageInfo.packageName, 0)
-                                val app = mutableMapOf<String, Any>()
-                                app["packageName"] = packageInfo.packageName
-                                app["appName"] = packageManager.getApplicationLabel(appInfo).toString()
-                                app["usageTime"] = usageStats[packageInfo.packageName] ?: 0L
-                                app["installDate"] = packageInfo.firstInstallTime
-                                app["version"] = packageInfo.versionName ?: ""
-                                apps.add(app)
-                            } catch (e: Exception) {
-                                continue
-                            }
-                        }
+                        val apps = getInstalledAppsWithUsage()
                         result.success(apps)
                     } catch (e: Exception) {
                         result.error("ERROR", "Failed to get apps", e.message)

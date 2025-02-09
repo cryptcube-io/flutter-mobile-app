@@ -81,7 +81,7 @@ class CustomNavBar extends StatelessWidget {
             width: 24,
             height: 24,
             colorFilter: ColorFilter.mode(
-              isSelected ? const Color(0xFF3A2985) : Colors.grey,
+              isSelected ? const Color(0xFF5A4BDD) : Colors.grey,
               BlendMode.srcIn,
             ),
           ),
@@ -89,7 +89,7 @@ class CustomNavBar extends StatelessWidget {
           Text(
             label,
             style: TextStyle(
-              color: isSelected ? const Color(0xFF3A2985) : Colors.grey,
+              color: isSelected ? const Color(0xFF5A4BDD) : Colors.grey,
               fontSize: 12,
               fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
             ),
