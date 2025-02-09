@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import '../../../models/app_item.dart';
+import '../../../services/app_icon_manager.dart';
 import '../../pages/score/app_detail.dart';
 
 class AppListItem extends StatelessWidget {
   final AppItem app;
+  final AppIconManager _iconManager = AppIconManager();
 
-  const AppListItem({super.key, required this.app});
+  AppListItem({super.key, required this.app});
 
   @override
   Widget build(BuildContext context) {
@@ -28,16 +30,15 @@ class AppListItem extends StatelessWidget {
                   app.iconBytes!,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
-                    print("Error loading icon for ${app.name}: $error");
                     return Icon(
-                      Icons.android,
+                      _iconManager.getFallbackIcon(app.name),
                       color: Colors.white,
                       size: 24,
                     );
                   },
                 )
               : Icon(
-                  Icons.android,
+                  _iconManager.getFallbackIcon(app.name),
                   color: Colors.white,
                   size: 24,
                 ),
