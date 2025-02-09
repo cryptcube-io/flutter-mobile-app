@@ -6,6 +6,7 @@ import '../../../services/auth_notifier_service.dart';
 import '../../components/appListPage/app_list_item.dart';
 import '../../components/custom_navbar.dart';
 import '../../components/shared/header.dart';
+import '../../components/appListPage/app_search_bar.dart';
 
 class AppList extends ConsumerStatefulWidget {
   const AppList({super.key});
@@ -17,12 +18,16 @@ class AppList extends ConsumerStatefulWidget {
 class _AppListState extends ConsumerState<AppList> {
   final AppLoaderService _appLoader = AppLoaderService();
   final ScrollController _scrollController = ScrollController();
-  List<AppItem> apps = [];
+  final TextEditingController _searchController = TextEditingController();
+  
+  List<AppItem> allApps = [];
+  List<AppItem> filteredApps = [];
   bool isLoading = true;
   bool isLoadingMore = false;
   bool hasMoreItems = true;
   int currentPage = 0;
   static const int pageSize = 20;
+  String searchQuery = '';
 
   @override
   void initState() {
@@ -34,6 +39,7 @@ class _AppListState extends ConsumerState<AppList> {
   @override
   void dispose() {
     _scrollController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -44,13 +50,30 @@ class _AppListState extends ConsumerState<AppList> {
     }
   }
 
+  void _onSearch(String query) {
+    setState(() {
+      searchQuery = query.toLowerCase();
+      _filterApps();
+    });
+  }
+
+  void _filterApps() {
+    if (searchQuery.isEmpty) {
+      filteredApps = List.from(allApps);
+    } else {
+      filteredApps = allApps
+          .where((app) => app.name.toLowerCase().contains(searchQuery))
+          .toList();
+    }
+  }
+
   Future<void> _loadApps() async {
     try {
       final token = ref.read(authProvider).token;
-      final loadedApps =
-          await _appLoader.loadApps(token, page: 0, pageSize: pageSize);
+      final loadedApps = await _appLoader.loadApps(token, page: 0, pageSize: pageSize);
       setState(() {
-        apps = loadedApps;
+        allApps = loadedApps;
+        _filterApps();
         isLoading = false;
         hasMoreItems = loadedApps.length == pageSize;
         currentPage = 0;
@@ -69,7 +92,7 @@ class _AppListState extends ConsumerState<AppList> {
   }
 
   Future<void> _loadMoreApps() async {
-    if (isLoadingMore || !hasMoreItems) return;
+    if (isLoadingMore || !hasMoreItems || searchQuery.isNotEmpty) return;
 
     setState(() {
       isLoadingMore = true;
@@ -84,7 +107,8 @@ class _AppListState extends ConsumerState<AppList> {
       );
 
       setState(() {
-        apps.addAll(loadedApps);
+        allApps.addAll(loadedApps);
+        _filterApps();
         isLoadingMore = false;
         hasMoreItems = loadedApps.length == pageSize;
         currentPage++;
@@ -102,10 +126,15 @@ class _AppListState extends ConsumerState<AppList> {
     }
   }
 
-  List<AppItem> get frequentlyUsedApps => apps.take(3).toList();
-  List<AppItem> get otherApps => apps.skip(3).toList();
+  List<AppItem> get frequentlyUsedApps => 
+      filteredApps.take(searchQuery.isEmpty ? 3 : filteredApps.length).toList();
+      
+  List<AppItem> get otherApps => 
+      searchQuery.isEmpty ? filteredApps.skip(3).toList() : [];
 
   Widget _buildSection(String title, List<AppItem> sectionApps) {
+    if (sectionApps.isEmpty) return const SizedBox.shrink();
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -141,6 +170,10 @@ class _AppListState extends ConsumerState<AppList> {
               title: 'Apps affecting your Score',
               onBackPressed: () => Navigator.pop(context),
             ),
+            AppSearchBar(
+              onSearch: _onSearch,
+              controller: _searchController,
+            ),
             if (isLoading)
               const Expanded(
                 child: Center(
@@ -154,8 +187,9 @@ class _AppListState extends ConsumerState<AppList> {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   children: [
                     _buildSection('Frequently Used Apps', frequentlyUsedApps),
-                    _buildSection('Other Applications', otherApps),
-                    if (hasMoreItems && isLoadingMore)
+                    if (searchQuery.isEmpty)
+                      _buildSection('Other Applications', otherApps),
+                    if (hasMoreItems && isLoadingMore && searchQuery.isEmpty)
                       const Padding(
                         padding: EdgeInsets.symmetric(vertical: 16.0),
                         child: Center(
