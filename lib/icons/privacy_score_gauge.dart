@@ -4,11 +4,11 @@ import 'package:intl/intl.dart';
 
 class PrivacyScoreGauge extends StatefulWidget {
   final double value;
-  
+
   PrivacyScoreGauge({
     required this.value,
   });
-  
+
   @override
   _PrivacyScoreGaugeState createState() => _PrivacyScoreGaugeState();
 }
@@ -47,13 +47,13 @@ class _PrivacyScoreGaugeState extends State<PrivacyScoreGauge> {
                         sizeUnit: GaugeSizeUnit.factor,
                         startWidth: 0.1,
                         endWidth: 0.1,
-                        gradient: const SweepGradient(
-                          colors: [
-                            Color(0xFFFF6B78),
-                            Color(0xFF6C5CE7),
-                          ],
-                          stops: [0.25, 0.75]
-                        ),
+                        gradient: const SweepGradient(colors: [
+                          Color(0xFFFF6B78),
+                          Color(0xFF6C5CE7),
+                        ], stops: [
+                          0.25,
+                          0.75
+                        ]),
                       )
                     ],
                     startAngle: 180,
@@ -101,31 +101,34 @@ class _PrivacyScoreGaugeState extends State<PrivacyScoreGauge> {
           ),
         ),
         const SizedBox(height: 8),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              '100',
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontSize: 12,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 44),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '100',
+                style: TextStyle(
+                  color: Colors.grey[600],
+                  fontSize: 12,
+                ),
               ),
-            ),
-            Text(
-              'Last updated on ${DateFormat('MM/dd/yyyy').format(DateTime.now())}',
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontSize: 12,
+              Text(
+                'Last updated on ${DateFormat('MM/dd/yyyy').format(DateTime.now())}',
+                style: TextStyle(
+                  color: Colors.grey[600],
+                  fontSize: 12,
+                ),
               ),
-            ),
-            Text(
-              '850',
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontSize: 12,
+              Text(
+                '850',
+                style: TextStyle(
+                  color: Colors.grey[600],
+                  fontSize: 12,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ],
     );

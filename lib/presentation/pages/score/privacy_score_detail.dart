@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dio/dio.dart';
-import '../../../config/api_endpoints.dart';
-import '../../../services/auth_notifier_service.dart';
+
+import '../../../config/theme/app_colors.dart';
 import '../../components/custom_navbar.dart';
 import '../../components/shared/header.dart';
 import '../../components/shared/standard_button.dart';
@@ -29,33 +29,37 @@ class _PrivacyScoreDetailState extends ConsumerState<PrivacyScoreDetail> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF3F4F6),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(6.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CustomHeader(
-                        title: 'Report Details',
-                        onBackPressed: () => Navigator.pop(context),
-                      ),
-                      _buildScoreCard(),
-                      const SizedBox(height: 24),
-                      _buildAppsList(),
-                      const SizedBox(height: 16),
-                      _buildPrivacyFactorCard(),
-                    ],
+      backgroundColor: Colors.transparent,
+      body: Container(
+        color: Colors.white,
+        child: SafeArea(
+          child: Column(
+            children: [
+              CustomHeader(
+                title: 'Report Details',
+                onBackPressed: () => Navigator.pop(context),
+              ),
+              Expanded(
+                child: Container(
+                  color: AppColors.contentAreaBackground,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildScoreCard(),
+                        const SizedBox(height: 16),
+                        _buildAppsList(),
+                        const SizedBox(height: 16),
+                        _buildPrivacyFactorCard(),
+                        const SizedBox(height: 16),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            CustomNavBar(),
-          ],
+              CustomNavBar(),
+            ],
+          ),
         ),
       ),
     );
@@ -64,9 +68,6 @@ class _PrivacyScoreDetailState extends ConsumerState<PrivacyScoreDetail> {
   Widget _buildScoreCard() {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        
-      ),
       child: Column(
         children: [
           const Text(
@@ -101,8 +102,7 @@ class _PrivacyScoreDetailState extends ConsumerState<PrivacyScoreDetail> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding:
-                const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
+            padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
             child: Text(
               'Apps Affecting Your Score (${apps.length})',
               style: const TextStyle(
@@ -241,29 +241,30 @@ class _PrivacyScoreDetailState extends ConsumerState<PrivacyScoreDetail> {
 
   Widget _buildPrivacyFactorCard() {
     return Card(
-        color: Colors.white,
-        child: InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const PrivacyScoreFactors(),
-              ),
-            );
-          },
-          child: ListTile(
-            leading: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.blue.shade50,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Icon(Icons.security, color: Color(0xFF6C5CE7)),
+      color: Colors.white,
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const PrivacyScoreFactors(),
             ),
-            title: const Text('Privacy Score Factor'),
-            subtitle: const Text('Lorem ipsum has been the industry\'s'),
+          );
+        },
+        child: ListTile(
+          leading: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.blue.shade50,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Icon(Icons.security, color: Color(0xFF6C5CE7)),
           ),
-        ));
+          title: const Text('Privacy Score Factor'),
+          subtitle: const Text('Lorem ipsum has been the industry\'s'),
+        ),
+      ),
+    );
   }
 }
 

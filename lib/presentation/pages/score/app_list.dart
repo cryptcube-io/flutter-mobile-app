@@ -1,3 +1,4 @@
+import 'package:Cryptcube_mobile_app/config/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../models/app_item.dart';
@@ -176,10 +177,12 @@ class _AppListState extends ConsumerState<AppList> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF3F4F6),
-      body: SafeArea(
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: Colors.transparent,
+    body: Container(
+      color: Colors.white,
+      child: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -187,39 +190,44 @@ class _AppListState extends ConsumerState<AppList> {
               title: 'Apps affecting your Score',
               onBackPressed: () => Navigator.pop(context),
             ),
-            AppSearchBar(
-              onSearch: _onSearch,
-              controller: _searchController,
-            ),
-            if (isLoading)
-              const Expanded(
-                child: Center(
-                  child: CircularProgressIndicator(),
-                ),
-              )
-            else
-              Expanded(
-                child: ListView(
-                  controller: _scrollController,
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+            Expanded(
+              child: Container(
+                color: AppColors.contentAreaBackground,
+                child: Column(
                   children: [
-                    _buildSection('Frequently Used Apps', frequentlyUsedApps),
-                    if (searchQuery.isEmpty)
-                      _buildSection('Other Applications', otherApps),
-                    if (hasMoreItems && isLoadingMore && searchQuery.isEmpty)
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 16.0),
-                        child: Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                      ),
+                    AppSearchBar(
+                      onSearch: _onSearch,
+                      controller: _searchController,
+                    ),
+                    Expanded(
+                      child: isLoading
+                        ? const Center(child: CircularProgressIndicator())
+                        : ListView(
+                            controller: _scrollController,
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            children: [
+                              _buildSection('Frequently Used Apps', frequentlyUsedApps),
+                              if (searchQuery.isEmpty)
+                                _buildSection('Other Applications', otherApps),
+                              if (hasMoreItems && isLoadingMore && searchQuery.isEmpty)
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 16.0),
+                                  child: Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                ),
+                            ],
+                          ),
+                    ),
                   ],
                 ),
               ),
+            ),
+            CustomNavBar(),
           ],
         ),
       ),
-      bottomNavigationBar: CustomNavBar(),
+    ),
     );
   }
 }
