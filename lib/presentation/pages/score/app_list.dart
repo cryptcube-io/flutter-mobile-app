@@ -148,11 +148,28 @@ class _AppListState extends ConsumerState<AppList> {
             ),
           ),
         ),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: sectionApps.length,
-          itemBuilder: (context, index) => AppListItem(app: sectionApps[index]),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.1),
+                spreadRadius: 0,
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              for (int i = 0; i < sectionApps.length; i++) ...[
+                AppListItem(app: sectionApps[i]),
+                if (i < sectionApps.length - 1)
+                  const Divider(height: 1, indent: 16, endIndent: 16),
+              ],
+            ],
+          ),
         ),
       ],
     );

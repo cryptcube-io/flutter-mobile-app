@@ -28,7 +28,7 @@ class AppSearchBar extends StatelessWidget {
           ),
           prefixIcon: Icon(
             Icons.search,
-            color: Colors.grey[400],
+            color: Colors.black,
           ),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(
