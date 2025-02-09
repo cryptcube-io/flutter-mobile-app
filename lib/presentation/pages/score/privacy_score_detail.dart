@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dio/dio.dart';
+import 'dart:typed_data';
 
 import '../../../config/theme/app_colors.dart';
 import '../../components/custom_navbar.dart';
 import '../../components/shared/header.dart';
 import '../../components/shared/standard_button.dart';
 import '../../../icons/privacy_score_gauge.dart';
+import '../../../services/app_icon_manager.dart';
+import '../../../services/app_loader_service.dart';
 import 'app_detail.dart';
 import 'app_list.dart';
 import 'privacy_score_factors.dart';
@@ -20,11 +23,35 @@ class PrivacyScoreDetail extends ConsumerStatefulWidget {
 
 class _PrivacyScoreDetailState extends ConsumerState<PrivacyScoreDetail> {
   final Dio _dio = Dio();
-  List<AppData> apps = [
-    AppData('TikTok', 310),
-    AppData('Facebook', 390),
-    AppData('Instagram', 491),
-  ];
+  final AppIconManager _iconManager = AppIconManager();
+  final AppLoaderService _appLoader = AppLoaderService();
+  List<AppData> apps = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadApps();
+  }
+
+  Future<void> _loadApps() async {
+    try {
+      final appItems = await _appLoader.loadApps('your_token_here', pageSize: 3);
+      setState(() {
+        apps = appItems.map((item) => AppData(
+          item.name,
+          int.parse(item.score.split('/')[0]),
+          item.packageName,
+          item.iconBytes,
+        )).toList();
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -110,10 +137,9 @@ class _PrivacyScoreDetailState extends ConsumerState<PrivacyScoreDetail> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding:
-                const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
+            padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
             child: Text(
-              'Apps Affecting Your Score (${apps.length})',
+              'Apps Affecting Your Score (${isLoading ? "..." : apps.length})',
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w500,
@@ -124,10 +150,19 @@ class _PrivacyScoreDetailState extends ConsumerState<PrivacyScoreDetail> {
               ),
             ),
           ),
-          for (int i = 0; i < apps.length; i++) ...[
-            _buildAppItem(apps[i]),
-            if (i < apps.length - 1)
-              const Divider(height: 1, indent: 16, endIndent: 16),
+          if (isLoading)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 32),
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            )
+          else ...[
+            for (int i = 0; i < apps.length; i++) ...[
+              _buildAppItem(apps[i]),
+              if (i < apps.length - 1)
+                const Divider(height: 1, indent: 16, endIndent: 16),
+            ],
           ],
           const SizedBox(height: 16),
           Padding(
@@ -150,45 +185,28 @@ class _PrivacyScoreDetailState extends ConsumerState<PrivacyScoreDetail> {
     );
   }
 
-  Color getAppColor(String appName) {
-    switch (appName.toLowerCase()) {
-      case 'tiktok':
-        return Colors.black87;
-      case 'facebook':
-        return const Color(0xFF1877F2);
-      case 'instagram':
-        return const Color(0xFFE4405F);
-      case 'whatsapp':
-        return const Color(0xFF25D366);
-      case 'youtube':
-        return const Color(0xFFFF0000);
-      case 'cryptcube_mobile_app':
-        return const Color(0xFF00E5FF);
-      default:
-        return Colors.grey.shade200;
-    }
-  }
-
   Widget _buildAppItem(AppData app) {
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(
         horizontal: 16,
         vertical: 8,
       ),
-      leading: Container(
+      leading: SizedBox(
         width: 48,
         height: 48,
-        decoration: BoxDecoration(
-          color: getAppColor(app.name),
-          borderRadius: BorderRadius.circular(12),
-        ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(12),
-          child: const Icon(
-            Icons.android,
-            color: Colors.white,
-            size: 24,
-          ),
+          child: app.iconBytes != null
+              ? Image.memory(
+                  app.iconBytes!,
+                  width: 48,
+                  height: 48,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return _buildFallbackIcon(app.name);
+                  },
+                )
+              : _buildFallbackIcon(app.name),
         ),
       ),
       title: Text(
@@ -241,11 +259,44 @@ class _PrivacyScoreDetailState extends ConsumerState<PrivacyScoreDetail> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => AppDetail(appName: app.name),
+            builder: (context) => AppDetail(
+              appName: app.name,
+              iconBytes: app.iconBytes,
+            ),
           ),
         );
       },
     );
+  }
+
+  Widget _buildFallbackIcon(String appName) {
+    return Container(
+      color: getAppColor(appName),
+      child: Icon(
+        _iconManager.getFallbackIcon(appName),
+        color: Colors.white,
+        size: 30,
+      ),
+    );
+  }
+
+  Color getAppColor(String appName) {
+    switch (appName.toLowerCase()) {
+      case 'tiktok':
+        return Colors.black87;
+      case 'facebook':
+        return const Color(0xFF1877F2);
+      case 'instagram':
+        return const Color(0xFFE4405F);
+      case 'whatsapp':
+        return const Color(0xFF25D366);
+      case 'youtube':
+        return const Color(0xFFFF0000);
+      case 'cryptcube_mobile_app':
+        return const Color(0xFF00E5FF);
+      default:
+        return Colors.grey.shade200;
+    }
   }
 
   Widget _buildPrivacyFactorCard() {
@@ -280,5 +331,8 @@ class _PrivacyScoreDetailState extends ConsumerState<PrivacyScoreDetail> {
 class AppData {
   final String name;
   final int score;
-  AppData(this.name, this.score);
+  final String packageName;
+  final Uint8List? iconBytes;
+
+  AppData(this.name, this.score, this.packageName, this.iconBytes);
 }

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dio/dio.dart';
+import 'dart:typed_data';
+import 'package:device_apps/device_apps.dart';
 import '../../../config/api_endpoints.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../services/auth_notifier_service.dart';
+import '../../../services/app_icon_manager.dart';
 import '../../components/appDetailPage/app_score_card.dart';
 import '../../components/appDetailPage/bottom_action_buttons.dart';
 import '../../components/appDetailPage/data_collection_section.dart';
@@ -12,7 +15,13 @@ import '../../components/shared/header.dart';
 
 class AppDetail extends ConsumerStatefulWidget {
   final String appName;
-  const AppDetail({super.key, required this.appName});
+  final Uint8List? iconBytes;
+  
+  const AppDetail({
+    super.key, 
+    required this.appName,
+    this.iconBytes,
+  });
 
   @override
   ConsumerState<AppDetail> createState() => _AppDetailState();
@@ -20,16 +29,35 @@ class AppDetail extends ConsumerStatefulWidget {
 
 class _AppDetailState extends ConsumerState<AppDetail> {
   final Dio _dio = Dio();
+  final AppIconManager _iconManager = AppIconManager();
   String explanation = '';
   bool isLoading = true;
+  String? packageName;
 
   @override
   void initState() {
     super.initState();
-    _fetchExplanation();
+    _fetchPackageName();
+  }
+
+  Future<void> _fetchPackageName() async {
+    List<Application> apps = await DeviceApps.getInstalledApplications(includeAppIcons: false, includeSystemApps: true);
+    for (var app in apps) {
+      if (app.appName.toLowerCase() == widget.appName.toLowerCase()) {
+        setState(() {
+          packageName = app.packageName;
+        });
+        _fetchExplanation();
+        return;
+      }
+    }
+    setState(() {
+      isLoading = false;
+    });
   }
 
   Future<void> _fetchExplanation() async {
+    if (packageName == null) return;
     try {
       final token = ref.read(authProvider).token;
       if (token == null) return;
@@ -38,7 +66,7 @@ class _AppDetailState extends ConsumerState<AppDetail> {
         ApiEndpoints.getApplicationScoreExplanation,
         queryParameters: {
           'appName': widget.appName,
-          'appVector': widget.appName,
+          'appVector': packageName,
         },
         options: Options(
           headers: {'Authorization': 'Bearer $token'},
@@ -60,6 +88,103 @@ class _AppDetailState extends ConsumerState<AppDetail> {
     }
   }
 
+  Widget _buildAppHeader() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
+      child: Column(
+        children: [
+          SizedBox(
+            width: 80,
+            height: 80,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: widget.iconBytes != null
+                  ? Image.memory(
+                      widget.iconBytes!,
+                      width: 80,
+                      height: 80,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: const Color(0xFF6044de),
+                          child: Icon(
+                            _iconManager.getFallbackIcon(widget.appName),
+                            color: Colors.white,
+                            size: 40,
+                          ),
+                        );
+                      },
+                    )
+                  : Container(
+                      color: const Color(0xFF6044de),
+                      child: Icon(
+                        _iconManager.getFallbackIcon(widget.appName),
+                        color: Colors.white,
+                        size: 40,
+                      ),
+                    ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            widget.appName,
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w600,
+              color: Colors.black87,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLoadingState() {
+    return const Center(
+      child: CircularProgressIndicator(),
+    );
+  }
+
+  Widget _buildErrorState() {
+    return Center(
+      child: Text(
+        'Error loading app details',
+        style: TextStyle(
+          color: Colors.red[700],
+          fontSize: 16,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContent() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildAppHeader(),
+        const SizedBox(height: 20),
+        const AppScoreCard(),
+        const SizedBox(height: 24),
+        if (explanation.isNotEmpty) Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Text(
+            explanation,
+            style: const TextStyle(
+              fontSize: 14,
+              color: Colors.black87,
+              height: 1.5,
+            ),
+          ),
+        ),
+        const SizedBox(height: 24),
+        const DataCollectionSection(),
+        const SizedBox(height: 24),
+        BottomActionButtons(appName: widget.appName),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,61 +195,19 @@ class _AppDetailState extends ConsumerState<AppDetail> {
           child: Column(
             children: [
               CustomHeader(
-                title: 'App Details',
+                title: 'App Info',
                 onBackPressed: () => Navigator.pop(context),
               ),
               Expanded(
                 child: Container(
                   color: AppColors.contentAreaBackground,
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 20),
-                        const AppScoreCard(),
-                        const SizedBox(height: 24),
-                        // if (isLoading)
-                        //   const Center(
-                        //     child: Padding(
-                        //       padding: EdgeInsets.symmetric(horizontal: 20),
-                        //       child: CircularProgressIndicator(),
-                        //     ),
-                        //   )
-                        // else if (explanation.isNotEmpty)
-                        //   Padding(
-                        //     padding: const EdgeInsets.symmetric(horizontal: 20),
-                        //     child: Container(
-                        //       width: double.infinity,
-                        //       padding: const EdgeInsets.all(16),
-                        //       decoration: BoxDecoration(
-                        //         color: Colors.grey[100],
-                        //         borderRadius: BorderRadius.circular(12),
-                        //         boxShadow: [
-                        //           BoxShadow(
-                        //             color: Colors.grey.withOpacity(0.1),
-                        //             spreadRadius: 2,
-                        //             blurRadius: 4,
-                        //             offset: const Offset(0, 2),
-                        //           ),
-                        //         ],
-                        //       ),
-                        //       child: Text(
-                        //         explanation,
-                        //         style: const TextStyle(
-                        //           fontSize: 16,
-                        //           color: Colors.black87,
-                        //           height: 1.5,
-                        //         ),
-                        //       ),
-                        //     ),
-                        //   ),
-                        const SizedBox(height: 24),
-                        const DataCollectionSection(),
-                        const SizedBox(height: 24),
-                        BottomActionButtons(appName: widget.appName),
-                      ],
-                    ),
-                  ),
+                  child: isLoading
+                      ? _buildLoadingState()
+                      : packageName == null
+                          ? _buildErrorState()
+                          : SingleChildScrollView(
+                              child: _buildContent(),
+                            ),
                 ),
               ),
               CustomNavBar(),

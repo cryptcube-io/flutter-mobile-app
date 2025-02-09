@@ -94,7 +94,10 @@ class AppListItem extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => AppDetail(appName: app.name),
+            builder: (context) => AppDetail(
+              appName: app.name,
+              iconBytes: app.iconBytes,
+            ),
           ),
         );
       },
