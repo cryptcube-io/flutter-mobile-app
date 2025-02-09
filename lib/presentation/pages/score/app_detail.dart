@@ -180,7 +180,7 @@ class _AppDetailState extends ConsumerState<AppDetail> {
         const SizedBox(height: 24),
         const DataCollectionSection(),
         const SizedBox(height: 24),
-        BottomActionButtons(appName: widget.appName),
+        BottomActionButtons(appName: widget.appName,iconBytes: widget.iconBytes),
       ],
     );
   }

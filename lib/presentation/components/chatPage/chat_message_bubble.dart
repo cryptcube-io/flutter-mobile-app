@@ -25,7 +25,7 @@ class ChatMessageBubble extends StatelessWidget {
           right: isUser ? 0 : 32,
         ),
         decoration: BoxDecoration(
-          color: isUser ? Color(0xFF4A4A4A) : Colors.grey[200],
+          color: isUser ? Colors.white : Color(0xFF6044DE), // White for user, blue for backend
           borderRadius: isUser
               ? BorderRadius.only(
                   topLeft: Radius.circular(12),
@@ -41,7 +41,7 @@ class ChatMessageBubble extends StatelessWidget {
         child: Text(
           message,
           style: TextStyle(
-            color: isUser ? Colors.white : Colors.black87,
+            color: isUser ? Color(0xFF6B7280) : Colors.white, // Gray text for user, white for backend
             fontSize: 16,
           ),
         ),

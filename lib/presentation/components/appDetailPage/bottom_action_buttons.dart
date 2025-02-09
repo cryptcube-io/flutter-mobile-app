@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../pages/score/faq_screen.dart';
 import '../../pages/score/privacy_toolkit.dart';
 
 class BottomActionButtons extends StatelessWidget {
   final String appName;
+  final Uint8List? iconBytes;
   
-  const BottomActionButtons({super.key, required this.appName});
+  const BottomActionButtons({super.key, required this.appName,this.iconBytes,});
 
   Widget _buildButton(String text, IconData icon, {required VoidCallback onTap}) {
     return Card(
@@ -52,7 +54,7 @@ class BottomActionButtons extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => FAQScreen(appName: appName),
+                    builder: (context) => FAQScreen(appName: appName,iconBytes: iconBytes,),
                   ),
                 );
               },

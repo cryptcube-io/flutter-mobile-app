@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../components/custom_navbar.dart';
 import '../../components/shared/header.dart';
 import '../navbar/chat_page.dart';
@@ -6,7 +7,8 @@ import '../../../config/theme/app_colors.dart';
 
 class FAQScreen extends StatelessWidget {
   final String appName;
-  const FAQScreen({super.key, required this.appName});
+  final Uint8List? iconBytes;
+  const FAQScreen({super.key, required this.appName,this.iconBytes,});
 
   Widget _buildButton(String text, IconData icon, {required VoidCallback onTap}) {
     return Card(
@@ -83,6 +85,8 @@ class FAQScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("FAQScreen - IconBytes length: ${iconBytes?.length}");
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Container(
@@ -157,7 +161,7 @@ class FAQScreen extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => ChatPage(appName: appName),
+                                  builder: (context) => ChatPage(appName: appName,iconBytes: iconBytes,),
                                 ),
                               );
                             },

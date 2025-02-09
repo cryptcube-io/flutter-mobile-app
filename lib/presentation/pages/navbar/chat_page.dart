@@ -1,16 +1,17 @@
-// lib/presentation/pages/chat/chat_page.dart
 import 'package:flutter/material.dart';
+import 'dart:typed_data';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../services/chat_service.dart';
-import '../../components/chat_input_field.dart';
-import '../../components/chat_message_bubble.dart';
+import '../../components/chatPage/chat_input_field.dart';
+import '../../components/chatPage/chat_message_bubble.dart';
 import '../../components/custom_navbar.dart';
-import '../../components/typing_indicator.dart';
-
+import '../../components/chatPage/typing_indicator.dart';
 
 class ChatPage extends StatefulWidget {
   final String appName;
-  const ChatPage({super.key, required this.appName});
+  final Uint8List? iconBytes;
+
+  const ChatPage({super.key, required this.appName, this.iconBytes});
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -21,7 +22,7 @@ class _ChatPageState extends State<ChatPage> {
   final ScrollController _scrollController = ScrollController();
   final List<Map<String, dynamic>> _messages = [];
   final ChatService _chatService = ChatService();
-  
+
   bool _isTyping = false;
   String _currentlyTypingText = '';
   int _currentIndex = 0;
@@ -107,6 +108,57 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  Widget _buildAppHeader() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+      child: Column(
+        children: [
+          SizedBox(
+            width: 50,
+            height: 50,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: widget.iconBytes != null && widget.iconBytes!.isNotEmpty
+                  ? Image.memory(
+                      widget.iconBytes!,
+                      width: 40,
+                      height: 40,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return _fallbackIcon();
+                      },
+                    )
+                  : _fallbackIcon(),
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            widget.appName,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: Colors.black87,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _fallbackIcon() {
+    return Container(
+      width: 40,
+      height: 40,
+      color: const Color(0xFF6044DE),
+      child: Icon(
+        Icons.apps,
+        color: Colors.white,
+        size: 20,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -115,24 +167,7 @@ class _ChatPageState extends State<ChatPage> {
       body: SafeArea(
         child: Column(
           children: [
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              alignment: Alignment.center,
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  widget.appName,
-                  style: TextStyle(
-                    color: Colors.black87,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-            ),
+            _buildAppHeader(),
             Expanded(
               child: SingleChildScrollView(
                 controller: _scrollController,
