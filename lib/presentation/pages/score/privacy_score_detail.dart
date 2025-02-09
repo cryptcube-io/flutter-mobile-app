@@ -7,6 +7,7 @@ import '../../components/custom_navbar.dart';
 import '../../components/shared/header.dart';
 import '../../components/shared/standard_button.dart';
 import '../../../icons/privacy_score_gauge.dart';
+import 'app_detail.dart';
 import 'app_list.dart';
 import 'privacy_score_factors.dart';
 
@@ -39,7 +40,6 @@ class _PrivacyScoreDetailState extends ConsumerState<PrivacyScoreDetail> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      
                       CustomHeader(
                         title: 'Report Details',
                         onBackPressed: () => Navigator.pop(context),
@@ -65,8 +65,7 @@ class _PrivacyScoreDetailState extends ConsumerState<PrivacyScoreDetail> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.blue.shade100),
-        borderRadius: BorderRadius.circular(12),
+        
       ),
       child: Column(
         children: [
@@ -85,29 +84,46 @@ class _PrivacyScoreDetailState extends ConsumerState<PrivacyScoreDetail> {
   }
 
   Widget _buildAppsList() {
-    return Card(
+    return Container(
+      decoration: BoxDecoration(
         color: Colors.white,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 0,
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding:
+                const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
+            child: Text(
               'Apps Affecting Your Score (${apps.length})',
               style: const TextStyle(
-                fontSize: 16,
+                fontSize: 20,
                 fontWeight: FontWeight.w500,
+                color: Color(0xFF6B7280),
+                height: 1.5,
+                letterSpacing: 0,
+                fontFamily: 'body',
               ),
             ),
-            const SizedBox(height: 16),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: apps.length,
-              itemBuilder: (context, index) {
-                return _buildAppItem(apps[index]);
-              },
-            ),
-            const SizedBox(height: 16),
-            StandardButton(
+          ),
+          for (int i = 0; i < apps.length; i++) ...[
+            _buildAppItem(apps[i]),
+            if (i < apps.length - 1)
+              const Divider(height: 1, indent: 16, endIndent: 16),
+          ],
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: StandardButton(
               text: 'View All Apps',
               onTap: () {
                 Navigator.push(
@@ -118,24 +134,108 @@ class _PrivacyScoreDetailState extends ConsumerState<PrivacyScoreDetail> {
                 );
               },
             ),
-          ],
-        ));
+          ),
+          const SizedBox(height: 16),
+        ],
+      ),
+    );
+  }
+
+  Color getAppColor(String appName) {
+    switch (appName.toLowerCase()) {
+      case 'tiktok':
+        return Colors.black87;
+      case 'facebook':
+        return const Color(0xFF1877F2);
+      case 'instagram':
+        return const Color(0xFFE4405F);
+      case 'whatsapp':
+        return const Color(0xFF25D366);
+      case 'youtube':
+        return const Color(0xFFFF0000);
+      case 'cryptcube_mobile_app':
+        return const Color(0xFF00E5FF);
+      default:
+        return Colors.grey.shade200;
+    }
   }
 
   Widget _buildAppItem(AppData app) {
     return ListTile(
-      leading: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: Colors.grey.shade200,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: const Icon(Icons.apps),
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 8,
       ),
-      title: Text(app.name),
-      subtitle: Text('Privacy Score: ${app.score}/800'),
-      trailing: const Icon(Icons.chevron_right),
+      leading: Container(
+        width: 48,
+        height: 48,
+        decoration: BoxDecoration(
+          color: getAppColor(app.name),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: const Icon(
+            Icons.android,
+            color: Colors.white,
+            size: 24,
+          ),
+        ),
+      ),
+      title: Text(
+        app.name,
+        style: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      subtitle: RichText(
+        text: TextSpan(
+          text: 'Privacy Score: ',
+          style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w300,
+            height: 1.0,
+            letterSpacing: 0,
+            color: Colors.black87,
+          ),
+          children: [
+            TextSpan(
+              text: '${app.score}',
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                height: 1.0,
+                letterSpacing: 0,
+                color: Colors.black87,
+              ),
+            ),
+            TextSpan(
+              text: '/800',
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                height: 1.0,
+                letterSpacing: 0,
+                color: Colors.black87,
+              ),
+            ),
+          ],
+        ),
+      ),
+      trailing: const Icon(
+        Icons.arrow_forward_ios,
+        size: 16,
+        color: Colors.grey,
+      ),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AppDetail(appName: app.name),
+          ),
+        );
+      },
     );
   }
 

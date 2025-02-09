@@ -25,7 +25,7 @@ class _PrivacyScoreGaugeState extends State<PrivacyScoreGauge> {
             fit: BoxFit.fitWidth,
             child: SizedBox(
               width: 90,
-              height: 50,
+              height: 40,
               child: SfRadialGauge(
                 axes: <RadialAxis>[
                   RadialAxis(

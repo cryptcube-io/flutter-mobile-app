@@ -54,22 +54,31 @@ class AppListItem extends StatelessWidget {
         text: TextSpan(
           text: 'Privacy Score: ',
           style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w300,
+            height: 1.0,
+            letterSpacing: 0,
             color: Colors.black87,
-            fontSize: 14,
           ),
           children: [
             TextSpan(
               text: app.score.split('/')[0],
               style: const TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.w500,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                height: 1.0,
+                letterSpacing: 0,
+                color: Colors.black87,
               ),
             ),
             TextSpan(
-              text: '/${app.score.split('/')[1]}',
+              text: '/800',
               style: const TextStyle(
-                color: Colors.black,
+                fontSize: 12,
                 fontWeight: FontWeight.w500,
+                height: 1.0,
+                letterSpacing: 0,
+                color: Colors.black87,
               ),
             ),
           ],
