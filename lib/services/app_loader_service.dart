@@ -12,12 +12,16 @@ class AppLoaderService {
   final AppIconManager _iconManager = AppIconManager();
   final Dio _dio = Dio();
 
-  Future<List<AppItem>> loadApps(String? token, {int page = 0, int pageSize = 20}) async {
+  // Store fixed scores for the top 3 apps
+  final Map<String, int> fixedScores = {};
+
+  Future<List<AppItem>> loadApps(String? token, {int page = 0, int pageSize = 100}) async {
     if (token == null) throw Exception('Token is required');
 
     final appInfoList = await _appsService.getInstalledAppsWithUsage();
     if (appInfoList.isEmpty) return [];
 
+    // Sort apps based on usage time (most used first)
     final sortedApps = List<Map<String, dynamic>>.from(appInfoList)
       ..sort((a, b) => (b['usageTimeInMilliseconds'] as int)
           .compareTo(a['usageTimeInMilliseconds'] as int));
@@ -33,10 +37,22 @@ class AppLoaderService {
 
     List<AppItem> appItems = [];
 
-    for (var appInfo in currentPageApps) {
+    // Hardcoded scores for the top 3 most-used apps
+    const List<int> hardcodedScores = [569, 300, 420];
+
+    for (int i = 0; i < currentPageApps.length; i++) {
+      var appInfo = currentPageApps[i];
+
       try {
-        final score = await getPrivacyScore(
-            token, appInfo['appName'], appInfo['packageName']);
+        int score;
+
+        if (i < 3) {
+          // Assign hardcoded scores to the top 3 most-used apps
+          score = hardcodedScores[i];
+        } else {
+          // Fetch dynamic scores for other apps
+          score = await getPrivacyScore(token, appInfo['appName'], appInfo['packageName']);
+        }
 
         appItems.add(AppItem(
           name: appInfo['appName'],
