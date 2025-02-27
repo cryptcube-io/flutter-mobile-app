@@ -4,7 +4,12 @@ import 'package:dio/dio.dart';
 import 'dart:typed_data';
 
 import '../../../config/theme/app_colors.dart';
+import '../../../models/app_data.dart';
+import '../../../services/logger_service.dart';
 import '../../components/custom_navbar.dart';
+import '../../components/privacyScoreDetails/app_list_item.dart';
+import '../../components/privacyScoreDetails/privacy_factor_card.dart';
+import '../../components/privacyScoreDetails/privacy_score_gauge_card.dart';
 import '../../components/shared/header.dart';
 import '../../components/shared/standard_button.dart';
 import '../../../icons/privacy_score_gauge.dart';
@@ -21,7 +26,7 @@ class PrivacyScoreDetail extends ConsumerStatefulWidget {
   ConsumerState<PrivacyScoreDetail> createState() => _PrivacyScoreDetailState();
 }
 
-class _PrivacyScoreDetailState extends ConsumerState<PrivacyScoreDetail> {
+class _PrivacyScoreDetailState extends ConsumerState<PrivacyScoreDetail> with LoggerMixin {
   final Dio _dio = Dio();
   final AppIconManager _iconManager = AppIconManager();
   final AppLoaderService _appLoader = AppLoaderService();
@@ -36,8 +41,7 @@ class _PrivacyScoreDetailState extends ConsumerState<PrivacyScoreDetail> {
 
   Future<void> _loadApps() async {
     try {
-      final appItems =
-          await _appLoader.loadApps('your_token_here', pageSize: 3);
+      final appItems = await _appLoader.loadApps('your_token_here', pageSize: 3);
       setState(() {
         apps = appItems
             .map((item) => AppData(
@@ -50,9 +54,7 @@ class _PrivacyScoreDetailState extends ConsumerState<PrivacyScoreDetail> {
         isLoading = false;
       });
     } catch (e) {
-      setState(() {
-        isLoading = false;
-      });
+      setState(() => isLoading = false);
     }
   }
 
@@ -76,16 +78,32 @@ class _PrivacyScoreDetailState extends ConsumerState<PrivacyScoreDetail> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildScoreCard(),
+                        const PrivacyScoreGaugeCard(value: 600),
                         const SizedBox(height: 16),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              _buildAppsList(),
+                              AppsListSection(
+                                apps: apps,
+                                isLoading: isLoading,
+                                onViewAllTapped: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const AppList(),
+                                  ),
+                                ),
+                              ),
                               const SizedBox(height: 16),
-                              _buildPrivacyFactorCard(),
+                              PrivacyFactorCard(
+                                onTap: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const PrivacyScoreFactors(),
+                                  ),
+                                ),
+                              ),
                               const SizedBox(height: 16),
                             ],
                           ),
@@ -95,268 +113,11 @@ class _PrivacyScoreDetailState extends ConsumerState<PrivacyScoreDetail> {
                   ),
                 ),
               ),
-              CustomNavBar(),
+             CustomNavBar(),
             ],
           ),
         ),
       ),
     );
   }
-
-  Widget _buildScoreCard() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          const Text(
-            'Your Privacy Score',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey,
-            ),
-          ),
-          const SizedBox(height: 34),
-          PrivacyScoreGauge(value: 600),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAppsList() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 0,
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding:
-                const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
-            child: Text(
-              'Apps Affecting Your Score (${isLoading ? "..." : apps.length})',
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w400,
-                color: Color(0xFF6B7280),
-                height: 1.5,
-                letterSpacing: 0,
-                fontFamily: 'body',
-              ),
-            ),
-          ),
-          if (isLoading)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 32),
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
-            )
-          else ...[
-            for (int i = 0; i < apps.length; i++) ...[
-              _buildAppItem(apps[i]),
-              if (i < apps.length - 1)
-                const Divider(height: 1, indent: 16, endIndent: 16),
-            ],
-          ],
-          const SizedBox(height: 6),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: StandardButton(
-              text: 'View All Apps',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const AppList(),
-                  ),
-                );
-              },
-            ),
-          ),
-          const SizedBox(height: 16),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAppItem(AppData app) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 0,
-      ),
-      leading: SizedBox(
-        width: 48,
-        height: 48,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: app.iconBytes != null
-              ? Image.memory(
-                  app.iconBytes!,
-                  width: 48,
-                  height: 48,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return _buildFallbackIcon(app.name);
-                  },
-                )
-              : _buildFallbackIcon(app.name),
-        ),
-      ),
-      title: Text(
-        app.name,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-      subtitle: RichText(
-        text: TextSpan(
-          text: 'Privacy Score: ',
-          style: const TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w300,
-            height: 1.0,
-            letterSpacing: 0,
-            color: Colors.black87,
-          ),
-          children: [
-            TextSpan(
-              text: '${app.score}',
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                height: 1.0,
-                letterSpacing: 0,
-                color: Colors.black87,
-              ),
-            ),
-            TextSpan(
-              text: '/800',
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                height: 1.0,
-                letterSpacing: 0,
-                color: Colors.black87,
-              ),
-            ),
-          ],
-        ),
-      ),
-      trailing: const Icon(
-        Icons.arrow_forward_ios,
-        size: 16,
-        color: Colors.grey,
-      ),
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => AppDetail(
-              appName: app.name,
-              iconBytes: app.iconBytes,
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildFallbackIcon(String appName) {
-    return Container(
-      color: getAppColor(appName),
-      child: Icon(
-        _iconManager.getFallbackIcon(appName),
-        color: Colors.white,
-        size: 30,
-      ),
-    );
-  }
-
-  Color getAppColor(String appName) {
-    switch (appName.toLowerCase()) {
-      case 'tiktok':
-        return Colors.black87;
-      case 'facebook':
-        return const Color(0xFF1877F2);
-      case 'instagram':
-        return const Color(0xFFE4405F);
-      case 'whatsapp':
-        return const Color(0xFF25D366);
-      case 'youtube':
-        return const Color(0xFFFF0000);
-      case 'cryptcube_mobile_app':
-        return const Color(0xFF00E5FF);
-      default:
-        return Colors.grey.shade200;
-    }
-  }
-
-  Widget _buildPrivacyFactorCard() {
-    return Card(
-      color: Colors.white,
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const PrivacyScoreFactors(),
-            ),
-          );
-        },
-        child: ListTile(
-          leading: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.blue.shade50,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Icon(Icons.security, color: Color(0xFF6C5CE7)),
-          ),
-          title: const Text(
-            'Privacy Score Factor',
-            style: TextStyle(
-              fontSize: 16, // Based on height
-              fontWeight: FontWeight.w600, // Semi-bold
-              height: 1.5, // Line height
-              letterSpacing: 0, // Letter spacing
-              fontFamily: 'Heading', // Custom font reference
-              color: Color(0xFF111827), // Hex color #111827
-            ),
-          ),
-          subtitle: const Text(
-            'Lorem Ipsum has been the industry\'s.',
-            style: TextStyle(
-              fontSize: 12, // Based on height
-              fontWeight: FontWeight.w400, // Regular weight
-              height: 1.5, // Line height
-              letterSpacing: 0, // No letter spacing
-              fontFamily: 'Body', // Custom font reference
-              color: Color(0xFF6B7280), // Hex color #6B7280
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class AppData {
-  final String name;
-  final int score;
-  final String packageName;
-  final Uint8List? iconBytes;
-
-  AppData(this.name, this.score, this.packageName, this.iconBytes);
 }

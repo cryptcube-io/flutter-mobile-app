@@ -11,8 +11,6 @@ class AppLoaderService {
   final InstalledAppsService _appsService = InstalledAppsService();
   final AppIconManager _iconManager = AppIconManager();
   final Dio _dio = Dio();
-
-  // Store fixed scores for the top 3 apps
   final Map<String, int> fixedScores = {};
 
   Future<List<AppItem>> loadApps(String? token, {int page = 0, int pageSize = 100}) async {
@@ -21,8 +19,10 @@ class AppLoaderService {
     final appInfoList = await _appsService.getInstalledAppsWithUsage();
     if (appInfoList.isEmpty) return [];
 
-    // Sort apps based on usage time (most used first)
-    final sortedApps = List<Map<String, dynamic>>.from(appInfoList)
+    final filteredApps = List<Map<String, dynamic>>.from(appInfoList)
+      ..removeWhere((app) => app['packageName'].toString().toLowerCase().contains('cryptcube'));
+
+    final sortedApps = filteredApps
       ..sort((a, b) => (b['usageTimeInMilliseconds'] as int)
           .compareTo(a['usageTimeInMilliseconds'] as int));
 
@@ -36,21 +36,15 @@ class AppLoaderService {
     final icons = await _iconManager.getMultipleAppIcons(packageNames);
 
     List<AppItem> appItems = [];
-
-    // Hardcoded scores for the top 3 most-used apps
     const List<int> hardcodedScores = [569, 300, 420];
 
     for (int i = 0; i < currentPageApps.length; i++) {
       var appInfo = currentPageApps[i];
-
       try {
         int score;
-
         if (i < 3) {
-          // Assign hardcoded scores to the top 3 most-used apps
           score = hardcodedScores[i];
         } else {
-          // Fetch dynamic scores for other apps
           score = await getPrivacyScore(token, appInfo['appName'], appInfo['packageName']);
         }
 
@@ -65,7 +59,6 @@ class AppLoaderService {
         print('Error getting score for ${appInfo['appName']}: $e');
       }
     }
-
     return appItems;
   }
 

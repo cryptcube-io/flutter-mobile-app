@@ -68,7 +68,7 @@ class _PrivacyScoreGaugeState extends State<PrivacyScoreGauge> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             const Text(
-                              'Good',
+                              '',
                               style: TextStyle(
                                 fontSize: 5,
                                 color: Color(0xFF6C5CE7),

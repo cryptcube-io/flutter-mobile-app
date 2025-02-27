@@ -21,35 +21,46 @@ class _PrivacyScoreSectionState extends ConsumerState<PrivacyScoreSection> with 
   @override
   void initState() {
     super.initState();
+    logInfo('Initializing PrivacyScoreSection');
     fetchPrivacyScore();
   }
 
   Future<void> fetchPrivacyScore() async {
+    logInfo('Fetching privacy score');
     final token = ref.read(authProvider).token;
-    if (token == null) return;
+    
+    if (token == null) {
+      logError('Auth token is null, cannot fetch privacy score');
+      return;
+    }
 
     final dio = Dio();
     try {
+      logDebug('Making API request to ${ApiEndpoints.getOverallPrivacyScore}');
       final response = await dio.get(
         ApiEndpoints.getOverallPrivacyScore,
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
       if (response.statusCode == 200) {
+        logInfo('Successfully fetched privacy score: ${response.data}');
         setState(() {
           privacyScore = response.data;
           isLoading = false;
         });
       } else {
+        logError('Failed to fetch privacy score. Status code: ${response.statusCode}');
         setState(() => isLoading = false);
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      logError('Error fetching privacy score', e, stackTrace);
       setState(() => isLoading = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    logDebug('Building PrivacyScoreSection, isLoading: $isLoading, score: $privacyScore');
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -83,10 +94,10 @@ class _PrivacyScoreSectionState extends ConsumerState<PrivacyScoreSection> with 
                 color: Colors.black,
               ),
               children: [
-                const TextSpan(text: 'Your Privacy is at '),
+                const TextSpan(text: 'Your Privacy is '),
                 TextSpan(
-                  text: 'Risk',
-                  style: TextStyle(color: Colors.orange[700]),
+                  text: 'Good',
+                  style: TextStyle(color: Color(0xFF6044de)),
                 ),
                 const TextSpan(text: '.'),
               ],
@@ -94,7 +105,7 @@ class _PrivacyScoreSectionState extends ConsumerState<PrivacyScoreSection> with 
           ),
           const SizedBox(height: 4),
           Text(
-            'Lorem ipsum odor amet, consectetuer adipiscing elit.',
+            'A score of 660 is fairly decent - congratulations.',
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey[600],
@@ -110,6 +121,7 @@ class _PrivacyScoreSectionState extends ConsumerState<PrivacyScoreSection> with 
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () {
+                    logInfo('Navigating to PrivacyScoreDetail');
                     Navigator.push(
                       context,
                       MaterialPageRoute(

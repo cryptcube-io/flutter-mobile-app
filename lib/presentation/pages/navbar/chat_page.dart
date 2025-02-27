@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import 'dart:typed_data';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../services/chat_service.dart';
+import '../../../services/logger_service.dart';
 import '../../components/chatPage/chat_input_field.dart';
 import '../../components/chatPage/chat_message_bubble.dart';
 import '../../components/custom_navbar.dart';
 import '../../components/chatPage/typing_indicator.dart';
 
-class ChatPage extends StatefulWidget {
+class ChatPage extends StatefulWidget with LoggerMixin {
   final String appName;
   final Uint8List? iconBytes;
 
@@ -18,7 +19,7 @@ class ChatPage extends StatefulWidget {
   State<ChatPage> createState() => _ChatPageState();
 }
 
-class _ChatPageState extends State<ChatPage> {
+class _ChatPageState extends State<ChatPage> with LoggerMixin {
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final List<Map<String, dynamic>> _messages = [];
@@ -32,14 +33,20 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     super.initState();
+    logInfo('Initializing ChatPage for app: ${widget.appName}');
     _loadToken();
   }
 
   Future<void> _loadToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _token = prefs.getString('auth_token');
-    });
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      setState(() {
+        _token = prefs.getString('auth_token');
+      });
+      logInfo('Auth token loaded successfully');
+    } catch (e, stackTrace) {
+      logError('Failed to load auth token', e, stackTrace);
+    }
   }
 
   void _scrollToBottom() {
@@ -55,6 +62,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void _startTypingResponse(String response) {
+    logDebug('Starting typing animation for response');
     _currentlyTypingText = '';
     _currentIndex = 0;
 
@@ -75,6 +83,7 @@ class _ChatPageState extends State<ChatPage> {
           _isTyping = false;
           _currentlyTypingText = '';
         });
+        logDebug('Typing animation completed');
         _scrollToBottom();
       }
     }
@@ -84,6 +93,9 @@ class _ChatPageState extends State<ChatPage> {
 
   void _handleSubmit(String text) async {
     if (text.isEmpty) return;
+    
+    logInfo('Processing new message for ${widget.appName}');
+    
     setState(() {
       _messages.add({
         'text': text,
@@ -91,13 +103,27 @@ class _ChatPageState extends State<ChatPage> {
       });
       _isTyping = true;
     });
+    
     _textController.clear();
     _scrollToBottom();
 
-    final response = await _chatService.getPrivacyResponse(text, widget.appName, _token);
-    if (response != null) {
-      _startTypingResponse(response);
-    } else {
+    try {
+      final response = await _chatService.getPrivacyResponse(text, widget.appName, _token);
+      if (response != null) {
+        logInfo('Received response from chat service');
+        _startTypingResponse(response);
+      } else {
+        logError('Received null response from chat service');
+        setState(() {
+          _isTyping = false;
+          _messages.add({
+            'text': 'Sorry, I encountered an error. Please try again.',
+            'isUser': false,
+          });
+        });
+      }
+    } catch (e, stackTrace) {
+      logError('Error getting chat response', e, stackTrace);
       setState(() {
         _isTyping = false;
         _messages.add({
@@ -105,11 +131,12 @@ class _ChatPageState extends State<ChatPage> {
           'isUser': false,
         });
       });
-      _scrollToBottom();
     }
+    _scrollToBottom();
   }
 
   Widget _buildAppHeader() {
+    logDebug('Building app header');
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
@@ -127,6 +154,7 @@ class _ChatPageState extends State<ChatPage> {
                       height: 40,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
+                        logError('Failed to load app icon', error, stackTrace);
                         return _fallbackIcon();
                       },
                     )
@@ -148,6 +176,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Widget _fallbackIcon() {
+    logDebug('Using fallback icon');
     return Container(
       width: 40,
       height: 40,
@@ -162,6 +191,7 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
+    logDebug('Building ChatPage widget');
     return Scaffold(
       backgroundColor: AppColors.contentAreaBackground,
       resizeToAvoidBottomInset: true,
@@ -205,6 +235,7 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   void dispose() {
+    logInfo('Disposing ChatPage for ${widget.appName}');
     _textController.dispose();
     _scrollController.dispose();
     super.dispose();

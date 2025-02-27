@@ -51,7 +51,10 @@ flutter:
   assets:
     - .env
     - lib/icons/svg/home.svg
+    - lib/icons/svg/home-outline.svg
     - lib/icons/svg/chat-bubble-left-right.svg
+    - lib/icons/svg/chat-bubble-outline.svg
     - lib/icons/svg/square-3-stack-3d.svg
+    - lib/icons/svg/square-3-stack-outline.svg
     - lib/icons/svg/user-circle.svg
-    
+    - lib/icons/svg/user-circle-outline.svg

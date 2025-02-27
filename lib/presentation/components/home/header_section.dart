@@ -1,58 +1,61 @@
 import 'package:flutter/material.dart';
+import '../../../services/logger_service.dart';
 
-class HeaderSection extends StatelessWidget {
-  final String userName;
+class HeaderSection extends StatelessWidget with LoggerMixin {
+ final String userName;
 
-  const HeaderSection({super.key, required this.userName});
+ const HeaderSection({super.key, required this.userName});
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Hi $userName,',
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Row(
-          children: const [
-            Text(
-              'Your Privacy is at ',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              'Risk',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.orange,
-              ),
-            ),
-            Text(
-              '.',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'Lorem ipsum dolor amet, consectetur adipiscing elit.',
-          style: TextStyle(
-            color: Colors.grey[600],
-            fontSize: 14,
-          ),
-        ),
-      ],
-    );
-  }
+ @override
+ Widget build(BuildContext context) {
+   logDebug('Building HeaderSection for user: $userName');
+   
+   return Column(
+     crossAxisAlignment: CrossAxisAlignment.start,
+     children: [
+       Text(
+         'Hi $userName,',
+         style: const TextStyle(
+           fontSize: 20,
+           fontWeight: FontWeight.w500,
+         ),
+       ),
+       const SizedBox(height: 8),
+       Row(
+         children: const [
+           Text(
+             'Your Privacy is at ',
+             style: TextStyle(
+               fontSize: 24,
+               fontWeight: FontWeight.bold,
+             ),
+           ),
+           Text(
+             'Risk',
+             style: TextStyle(
+               fontSize: 24,
+               fontWeight: FontWeight.bold,
+               color: Colors.orange,
+             ),
+           ),
+           Text(
+             '.',
+             style: TextStyle(
+               fontSize: 24,
+               fontWeight: FontWeight.bold,
+             ),
+           ),
+         ],
+       ),
+       const SizedBox(height: 8),
+       Text(
+         'Lorem ipsum dolor amet, consectetur adipiscing elit.',
+         style: TextStyle(
+           color: Colors.grey[600],
+           fontSize: 14,
+         ),
+       ),
+     ],
+   );
+ }
 }

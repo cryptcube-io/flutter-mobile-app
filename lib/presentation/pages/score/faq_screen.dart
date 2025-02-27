@@ -8,9 +8,14 @@ import '../../../config/theme/app_colors.dart';
 class FAQScreen extends StatelessWidget {
   final String appName;
   final Uint8List? iconBytes;
-  const FAQScreen({super.key, required this.appName,this.iconBytes,});
+  const FAQScreen({
+    super.key,
+    required this.appName,
+    this.iconBytes,
+  });
 
-  Widget _buildButton(String text, IconData icon, {required VoidCallback onTap}) {
+  Widget _buildButton(String text, IconData icon,
+      {required VoidCallback onTap}) {
     return Card(
       margin: EdgeInsets.zero,
       color: const Color(0xFFEEEDFC),
@@ -45,7 +50,8 @@ class FAQScreen extends StatelessWidget {
     return Column(
       children: [
         ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           title: Text(
             title,
             style: TextStyle(
@@ -135,18 +141,14 @@ class FAQScreen extends StatelessWidget {
                                     ),
                                   ),
                                 ),
+                                _buildFAQItem('How is GPS data used?',
+                                    'Understand how the app handles and protects your location information.'),
                                 _buildFAQItem(
-                                  'Title 1: Lorem Ipsum',
-                                  'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-                                ),
+                                    'Does the app have access to my Email content?',
+                                    'Learn about email permissions and how the app safeguards your email data.'),
                                 _buildFAQItem(
-                                  'Title 2: Lorem Ipsum',
-                                  'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-                                ),
-                                _buildFAQItem(
-                                  'Title 3: Lorem Ipsum',
-                                  'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-                                ),
+                                    'What are the major app interactions and what do they reveal about the Users?',
+                                    'Discover what information is collected when you use different app features.'),
                               ],
                             ),
                           ),
@@ -161,7 +163,10 @@ class FAQScreen extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => ChatPage(appName: appName,iconBytes: iconBytes,),
+                                  builder: (context) => ChatPage(
+                                    appName: appName,
+                                    iconBytes: iconBytes,
+                                  ),
                                 ),
                               );
                             },
