@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../constants/enums.dart';
 import '../../../models/app_data.dart';
 import '../../pages/score/app_detail.dart';
 import '../shared/standard_button.dart';
@@ -70,6 +71,7 @@ class AppsListSection extends StatelessWidget {
               child: StandardButton(
                 text: 'View All Apps',
                 onTap: onViewAllTapped,
+                type: ButtonType.secondary,
               ),
             ),
             const SizedBox(height: 16),

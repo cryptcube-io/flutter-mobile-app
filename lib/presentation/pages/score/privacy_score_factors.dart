@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../config/theme/app_colors.dart';
+import '../../../core/theme/colors/app_colors.dart';
 import '../../components/custom_navbar.dart';
 import '../../components/shared/header.dart';
 

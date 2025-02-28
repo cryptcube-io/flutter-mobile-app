@@ -4,7 +4,7 @@ import 'package:dio/dio.dart';
 import 'dart:typed_data';
 import 'package:device_apps/device_apps.dart';
 import '../../../config/api_endpoints.dart';
-import '../../../config/theme/app_colors.dart';
+import '../../../core/theme/colors/app_colors.dart';
 import '../../../services/auth_notifier_service.dart';
 import '../../../services/app_icon_manager.dart';
 import '../../components/appDetailPage/app_score_card.dart';

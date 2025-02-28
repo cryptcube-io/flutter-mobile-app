@@ -1,6 +1,6 @@
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
-import '../../../config/theme/app_colors.dart';
+import '../../../core/theme/colors/app_colors.dart';
 import '../../../services/logger_service.dart';
 import '../../../services/app_info_db_loader_service.dart';
 import '../../../services/app_permission_checker.dart';

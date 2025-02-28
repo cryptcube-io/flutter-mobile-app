@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dio/dio.dart';
 import 'dart:typed_data';
 
-import '../../../config/theme/app_colors.dart';
+import '../../../core/theme/colors/app_colors.dart';
 import '../../../models/app_data.dart';
 import '../../../services/logger_service.dart';
 import '../../components/custom_navbar.dart';

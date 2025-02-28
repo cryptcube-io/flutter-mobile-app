@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import '../../components/custom_navbar.dart';
 import '../../components/shared/header.dart';
 import '../navbar/chat_page.dart';
-import '../../../config/theme/app_colors.dart';
+import '../../../core/theme/colors/app_colors.dart';
 
 class FAQScreen extends StatelessWidget {
   final String appName;

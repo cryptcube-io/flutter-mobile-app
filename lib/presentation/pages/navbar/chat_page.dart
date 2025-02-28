@@ -1,4 +1,4 @@
-import 'package:Cryptcube_mobile_app/config/theme/app_colors.dart';
+import 'package:Cryptcube_mobile_app/core/theme/colors/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'dart:typed_data';
 import 'package:shared_preferences/shared_preferences.dart';

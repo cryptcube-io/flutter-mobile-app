@@ -4,6 +4,7 @@ import '../presentation/pages/navbar/chat_page.dart';
 import '../presentation/pages/navbar/cube_page.dart';
 import '../presentation/pages/navbar/folder_page.dart';
 import '../presentation/pages/navbar/home_page.dart';
+import '../presentation/pages/navbar/navbar_chat_page.dart';
 import '../presentation/pages/navbar/people_page.dart';
 
 class NavigationService {
@@ -27,7 +28,7 @@ class NavigationService {
         page = const HomePage();
         break;
       case 2:
-        page = ChatPage(appName: "ChatGPT");
+        page = const IntroductionPage();
         break;
       case 3:
         page = const FolderPage();
