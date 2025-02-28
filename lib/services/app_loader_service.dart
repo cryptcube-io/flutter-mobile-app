@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:dio/dio.dart';
-import '../config/api_endpoints.dart';
+import '../constants/api_endpoints.dart';
 import '../models/app_item.dart';
 import '../../../services/installed_apps_service.dart';
 import 'app_icon_manager.dart';

@@ -1,4 +1,4 @@
-import 'package:Cryptcube_mobile_app/config/api_endpoints.dart';
+import 'package:Cryptcube_mobile_app/constants/api_endpoints.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';

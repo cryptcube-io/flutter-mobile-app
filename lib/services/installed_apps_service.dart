@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'dart:developer' as developer;
 import 'dart:convert';
 import 'dart:io';
-import '../config/api_endpoints.dart';
+import '../constants/api_endpoints.dart';
 import '../models/app_info.dart';
 
 class InstalledAppsService {

@@ -58,3 +58,5 @@ flutter:
     - lib/icons/svg/square-3-stack-outline.svg
     - lib/icons/svg/user-circle.svg
     - lib/icons/svg/user-circle-outline.svg
+    - lib/icons/svg/microphone.svg
+    - lib/icons/svg/sparkles.svg

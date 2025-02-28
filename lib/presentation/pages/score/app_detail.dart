@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dio/dio.dart';
 import 'dart:typed_data';
 import 'package:device_apps/device_apps.dart';
-import '../../../config/api_endpoints.dart';
+import '../../../constants/api_endpoints.dart';
 import '../../../core/theme/colors/app_colors.dart';
 import '../../../services/auth_notifier_service.dart';
 import '../../../services/app_icon_manager.dart';

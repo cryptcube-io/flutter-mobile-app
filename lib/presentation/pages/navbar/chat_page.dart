@@ -1,5 +1,6 @@
 import 'package:Cryptcube_mobile_app/core/theme/colors/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:typed_data';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../services/chat_service.dart';
@@ -8,6 +9,7 @@ import '../../components/chatPage/chat_input_field.dart';
 import '../../components/chatPage/chat_message_bubble.dart';
 import '../../components/custom_navbar.dart';
 import '../../components/chatPage/typing_indicator.dart';
+import '../../components/shared/header.dart';
 
 class ChatPage extends StatefulWidget with LoggerMixin {
   final String appName;
@@ -93,9 +95,9 @@ class _ChatPageState extends State<ChatPage> with LoggerMixin {
 
   void _handleSubmit(String text) async {
     if (text.isEmpty) return;
-    
+
     logInfo('Processing new message for ${widget.appName}');
-    
+
     setState(() {
       _messages.add({
         'text': text,
@@ -103,12 +105,13 @@ class _ChatPageState extends State<ChatPage> with LoggerMixin {
       });
       _isTyping = true;
     });
-    
+
     _textController.clear();
     _scrollToBottom();
 
     try {
-      final response = await _chatService.getPrivacyResponse(text, widget.appName, _token);
+      final response =
+          await _chatService.getPrivacyResponse(text, widget.appName, _token);
       if (response != null) {
         logInfo('Received response from chat service');
         _startTypingResponse(response);
@@ -139,8 +142,11 @@ class _ChatPageState extends State<ChatPage> with LoggerMixin {
     logDebug('Building app header');
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
-      child: Column(
+      padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 10),
+      color: Color(0xFFDEDBF8), // Custom color #dedbf8
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(
             width: 50,
@@ -161,7 +167,7 @@ class _ChatPageState extends State<ChatPage> with LoggerMixin {
                   : _fallbackIcon(),
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(width: 8),
           Text(
             widget.appName,
             style: const TextStyle(
@@ -193,40 +199,58 @@ class _ChatPageState extends State<ChatPage> with LoggerMixin {
   Widget build(BuildContext context) {
     logDebug('Building ChatPage widget');
     return Scaffold(
-      backgroundColor: AppColors.contentAreaBackground,
+      backgroundColor: AppColors.transparent,
       resizeToAvoidBottomInset: true,
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildAppHeader(),
-            Expanded(
-              child: SingleChildScrollView(
-                controller: _scrollController,
-                child: Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      ..._messages.map((message) => ChatMessageBubble(
-                            message: message['text'],
-                            isUser: message['isUser'],
-                          )),
-                      if (_isTyping && _currentlyTypingText.isEmpty)
-                        TypingIndicator(),
-                      if (_currentlyTypingText.isNotEmpty)
-                        ChatMessageBubble(
-                          message: _currentlyTypingText,
-                          isUser: false,
-                        ),
-                    ],
+      appBar: AppBar(
+        toolbarHeight: 0,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        systemOverlayStyle: SystemUiOverlayStyle.light,
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: AppColors.backgroundGradient,
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              CustomHeader(
+                title: 'Chat',
+                onBackPressed: () => Navigator.pop(context),
+              ),
+              _buildAppHeader(),
+              Expanded(
+                child: Container(
+                  // color: AppColors.contentAreaBackground,
+                  child: SingleChildScrollView(
+                    controller: _scrollController,
+                    child: Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Column(
+                        children: [
+                          ..._messages.map((message) => ChatMessageBubble(
+                                message: message['text'],
+                                isUser: message['isUser'],
+                              )),
+                          if (_isTyping && _currentlyTypingText.isEmpty)
+                            TypingIndicator(),
+                          if (_currentlyTypingText.isNotEmpty)
+                            ChatMessageBubble(
+                              message: _currentlyTypingText,
+                              isUser: false,
+                            ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
-            ChatInputField(
-              controller: _textController,
-              onSubmit: _handleSubmit,
-            ),
-          ],
+              ChatInputField(
+                controller: _textController,
+                onSubmit: _handleSubmit,
+              ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: CustomNavBar(),

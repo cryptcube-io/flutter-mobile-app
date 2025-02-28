@@ -1,4 +1,4 @@
-import 'package:Cryptcube_mobile_app/config/api_endpoints.dart';
+import 'package:Cryptcube_mobile_app/constants/api_endpoints.dart';
 import 'package:dio/dio.dart';
 import 'package:hive/hive.dart';
 import 'dart:developer' as developer;

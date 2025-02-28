@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class ChatInputField extends StatelessWidget {
   final TextEditingController controller;
@@ -12,45 +13,55 @@ class ChatInputField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(
-          top: BorderSide(color: Colors.grey[300]!),
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Container(
+        height: 56,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(28),
+          border: Border.all(color: Colors.grey.shade200),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 3,
+              offset: const Offset(0, 1),
+            ),
+          ],
         ),
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(8),
         child: Row(
           children: [
-            Icon(Icons.attach_file, color: Colors.grey),
-            SizedBox(width: 8),
+            const SizedBox(width: 16),
+            SvgPicture.asset(
+              'lib/icons/svg/sparkles.svg',
+              height: 24,
+              width: 24,
+              color: Colors.deepPurple,
+            ),
+            const SizedBox(width: 12),
             Expanded(
-              child: Container(
-                height: 40,
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey[300]!),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: TextField(
-                  controller: controller,
-                  onSubmitted: onSubmit,
-                  decoration: InputDecoration(
-                    hintText: 'Enter Text',
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.zero,
+              child: TextField(
+                controller: controller,
+                onSubmitted: onSubmit,
+                decoration: const InputDecoration(
+                  hintText: 'Ask Bagheera anything',
+                  hintStyle: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 16,
                   ),
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.zero,
                 ),
               ),
             ),
-            SizedBox(width: 8),
-            Icon(Icons.mic, color: Colors.grey),
-            SizedBox(width: 8),
-            GestureDetector(
-              onTap: () => onSubmit(controller.text),
-              child: Icon(Icons.send, color: Colors.grey),
+            const SizedBox(width: 12),
+            SvgPicture.asset(
+              'lib/icons/svg/microphone.svg',
+              height: 24,
+              width: 24,
+              color: Colors.deepPurple,
             ),
+            const SizedBox(width: 16),
           ],
         ),
       ),

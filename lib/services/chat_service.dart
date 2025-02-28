@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'dart:convert';
-import '../config/api_endpoints.dart';
+import '../constants/api_endpoints.dart';
 import '../services/logger_service.dart';
 
 class ChatService with LoggerMixin {
