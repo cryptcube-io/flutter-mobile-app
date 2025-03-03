@@ -5,6 +5,7 @@ import '../../components/custom_navbar.dart';
 import '../../components/navbarChatPage/frequently_used_apps_card.dart';
 import '../../components/navbarChatPage/introduction_text_section.dart';
 import '../../pages/score/app_detail.dart';
+import 'chat_page.dart';
 
 class IntroductionPage extends StatefulWidget {
   const IntroductionPage({super.key});
@@ -34,7 +35,7 @@ class _IntroductionPageState extends State<IntroductionPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => AppDetail(
+                        builder: (context) => ChatPage(
                           appName: app.name,
                           iconBytes: app.iconBytes,
                         ),

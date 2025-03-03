@@ -4,16 +4,25 @@ import '../../../core/theme/typography/app_text_styles.dart';
 
 class IntroductionTextSection extends StatelessWidget {
   const IntroductionTextSection({super.key});
-
+  
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Column(
         children: [
-          Text(
-            "Hi, I am Security Assistant",
-            style: AppTextStyles.headingH4.copyWith(color: Colors.white),
+          RichText(
+            textAlign: TextAlign.center,
+            text: TextSpan(
+              style: AppTextStyles.headingH4.copyWith(color: Colors.white),
+              children: [
+                const TextSpan(text: "Hi, I am "),
+                TextSpan(
+                  text: "Bagheera",
+                  style: AppTextStyles.headingH4.copyWith(color: Colors.purple),
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 16),
           Text(

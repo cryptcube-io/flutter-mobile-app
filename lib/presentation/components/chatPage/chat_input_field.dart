@@ -18,9 +18,12 @@ class ChatInputField extends StatelessWidget {
       child: Container(
         height: 56,
         decoration: BoxDecoration(
-          color: Colors.white,
+          gradient: const LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            colors: [Color(0xFFc9c5f4), Color(0xFFfecdd3)],
+          ),
           borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: Colors.grey.shade200),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.05),
@@ -29,40 +32,49 @@ class ChatInputField extends StatelessWidget {
             ),
           ],
         ),
-        child: Row(
-          children: [
-            const SizedBox(width: 16),
-            SvgPicture.asset(
-              'lib/icons/svg/sparkles.svg',
-              height: 24,
-              width: 24,
-              color: Colors.deepPurple,
+        child: Padding(
+          padding: const EdgeInsets.all(1.5),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(28),
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: TextField(
-                controller: controller,
-                onSubmitted: onSubmit,
-                decoration: const InputDecoration(
-                  hintText: 'Ask Bagheera anything',
-                  hintStyle: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 16,
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.zero,
+            child: Row(
+              children: [
+                const SizedBox(width: 16),
+                SvgPicture.asset(
+                  'lib/icons/svg/sparkles.svg',
+                  height: 24,
+                  width: 24,
+                  color: Colors.deepPurple,
                 ),
-              ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextField(
+                    controller: controller,
+                    onSubmitted: onSubmit,
+                    decoration: const InputDecoration(
+                      hintText: 'Ask Bagheera anything',
+                      hintStyle: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 16,
+                      ),
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                SvgPicture.asset(
+                  'lib/icons/svg/microphone.svg',
+                  height: 24,
+                  width: 24,
+                  color: Colors.deepPurple,
+                ),
+                const SizedBox(width: 16),
+              ],
             ),
-            const SizedBox(width: 12),
-            SvgPicture.asset(
-              'lib/icons/svg/microphone.svg',
-              height: 24,
-              width: 24,
-              color: Colors.deepPurple,
-            ),
-            const SizedBox(width: 16),
-          ],
+          ),
         ),
       ),
     );
