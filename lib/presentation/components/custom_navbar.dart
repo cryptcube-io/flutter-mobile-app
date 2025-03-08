@@ -84,7 +84,6 @@ class CustomNavBar extends StatelessWidget with LoggerMixin {
     bool isSelected,
   ) {
     logDebug('Building nav item: $label, index: $index, isSelected: $isSelected');
-    logDebug('Using SVG path: ${isSelected ? selectedSvgPath : unselectedSvgPath}');
     
     return GestureDetector(
       onTap: () {
@@ -102,16 +101,14 @@ class CustomNavBar extends StatelessWidget with LoggerMixin {
           Builder(
             builder: (context) {
               final path = isSelected ? selectedSvgPath : unselectedSvgPath;
-              logDebug('Attempting to load SVG file: $path');
               
               // Check if file exists in asset bundle
               bool fileExists = false;
               try {
                 DefaultAssetBundle.of(context).load(path).then((_) {
                   fileExists = true;
-                  logDebug('SVG file exists: $path');
+                  
                 }).catchError((error) {
-                  logError('SVG file does not exist in asset bundle: $path', error, null);
                 });
               } catch (e) {
                 logDebug('Error checking if file exists: $path');
@@ -128,7 +125,7 @@ class CustomNavBar extends StatelessWidget with LoggerMixin {
                   ),
                 );
               } catch (e, stackTrace) {
-                logError('Error loading SVG: $path', e, stackTrace);
+               
                 return Container(
                   width: 24,
                   height: 24,

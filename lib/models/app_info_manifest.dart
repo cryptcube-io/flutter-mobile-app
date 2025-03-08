@@ -1,6 +1,6 @@
 import 'dart:io';
 
-class AppInfo {
+class AppInfoManifest {
   final String packageName;
   final String appName;
   final Duration usageTimeInMilliseconds;
@@ -8,7 +8,7 @@ class AppInfo {
   final String version;
   final String operatingSystem;
 
-  AppInfo({
+  AppInfoManifest({
     required this.packageName,
     required this.appName,
     required this.usageTimeInMilliseconds,
@@ -17,8 +17,8 @@ class AppInfo {
     required this.operatingSystem,
   });
 
-  factory AppInfo.fromMap(Map<Object?, Object?> map) {
-    return AppInfo(
+  factory AppInfoManifest.fromMap(Map<Object?, Object?> map) {
+    return AppInfoManifest(
       packageName: map['packageName'] as String,
       appName: map['appName'] as String,
       usageTimeInMilliseconds: Duration(milliseconds: (map['usageTime'] as int).toInt()),

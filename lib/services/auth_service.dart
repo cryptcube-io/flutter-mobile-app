@@ -68,8 +68,8 @@ class AuthService with LoggerMixin {
         }
       }
 
-      const defaultToken =
-          "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJncmVnQGNyeXB0Y3ViZS5pbyIsImlhdCI6MTczOTEyNDE4MiwiZXhwIjoxNzQwNDIwMTgyfQ.CdblIg7UME_C8jLlcNMKJW67q1tOmt2UotiyHGN81z4";
+      var defaultToken =
+          dotenv.env['DEFAULT_AUTH_TOKEN'] ?? '';
       await saveToken(defaultToken);
       logInfo('Using default token due to authentication failure');
       return defaultToken;
@@ -82,8 +82,8 @@ class AuthService with LoggerMixin {
             stackTrace);
       }
 
-      const defaultToken =
-          "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJncmVnQGNyeXB0Y3ViZS5pbyIsImlhdCI6MTczODM1MjU2MCwiZXhwIjoxNzM5NjQ4NTYwfQ.yHdGU5V4M1v_akZCqdDxtRTOOU4k06LfOInai6bJNac";
+      var defaultToken =
+          dotenv.env['DEFAULT_AUTH_TOKEN'] ?? '';
       await saveToken(defaultToken);
       logInfo('Using default token due to exception');
       return defaultToken;

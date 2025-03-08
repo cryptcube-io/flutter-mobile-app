@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../models/app_item.dart';
 import '../../../services/app_loader_service.dart';
 import '../../../services/auth_notifier_service.dart';
+import '../../../services/logger_service.dart';
 import '../../components/appListPage/app_list_item.dart';
 import '../../components/custom_navbar.dart';
 import '../../components/shared/header.dart';
@@ -16,7 +17,7 @@ class AppList extends ConsumerStatefulWidget {
   ConsumerState<AppList> createState() => _AppListState();
 }
 
-class _AppListState extends ConsumerState<AppList> {
+class _AppListState extends ConsumerState<AppList> with LoggerMixin {
   final AppLoaderService _appLoader = AppLoaderService();
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
@@ -33,25 +34,27 @@ class _AppListState extends ConsumerState<AppList> {
   @override
   void initState() {
     super.initState();
+    logInfo('Initializing AppList screen');
     _scrollController.addListener(_onScroll);
     _loadApps();
   }
 
   @override
   void dispose() {
+    logInfo('Disposing AppList screen');
     _scrollController.dispose();
     _searchController.dispose();
     super.dispose();
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent * 0.8) {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent * 0.8) {
       _loadMoreApps();
     }
   }
 
   void _onSearch(String query) {
+    logInfo('User searching apps with query: "$query"');
     setState(() {
       searchQuery = query.toLowerCase();
       _filterApps();
@@ -66,12 +69,15 @@ class _AppListState extends ConsumerState<AppList> {
           .where((app) => app.name.toLowerCase().contains(searchQuery))
           .toList();
     }
+    logDebug('Filtered apps count: ${filteredApps.length}');
   }
 
   Future<void> _loadApps() async {
     try {
+      logInfo('Loading apps (page: 0)');
       final token = ref.read(authProvider).token;
       final loadedApps = await _appLoader.loadApps(token, page: 0, pageSize: pageSize);
+      
       setState(() {
         allApps = loadedApps;
         _filterApps();
@@ -79,7 +85,10 @@ class _AppListState extends ConsumerState<AppList> {
         hasMoreItems = loadedApps.length == pageSize;
         currentPage = 0;
       });
-    } catch (e) {
+
+      logInfo('Successfully loaded ${loadedApps.length} apps');
+    } catch (e, stackTrace) {
+      logError('Failed to load apps', e, stackTrace);
       setState(() {
         isLoading = false;
       });
@@ -100,6 +109,7 @@ class _AppListState extends ConsumerState<AppList> {
     });
 
     try {
+      logInfo('Loading more apps (page: ${currentPage + 1})');
       final token = ref.read(authProvider).token;
       final loadedApps = await _appLoader.loadApps(
         token,
@@ -114,7 +124,10 @@ class _AppListState extends ConsumerState<AppList> {
         hasMoreItems = loadedApps.length == pageSize;
         currentPage++;
       });
-    } catch (e) {
+
+      logInfo('Loaded ${loadedApps.length} additional apps');
+    } catch (e, stackTrace) {
+      logError('Failed to load more apps', e, stackTrace);
       setState(() {
         isLoadingMore = false;
       });
@@ -177,57 +190,57 @@ class _AppListState extends ConsumerState<AppList> {
   }
 
   @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    backgroundColor: Colors.transparent,
-    body: Container(
-      color: Colors.white,
-      child: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CustomHeader(
-              title: 'Apps affecting your Score',
-              onBackPressed: () => Navigator.pop(context),
-            ),
-            Expanded(
-              child: Container(
-                color: AppColors.contentAreaBackground,
-                child: Column(
-                  children: [
-                    AppSearchBar(
-                      onSearch: _onSearch,
-                      controller: _searchController,
-                    ),
-                    Expanded(
-                      child: isLoading
-                        ? const Center(child: CircularProgressIndicator())
-                        : ListView(
-                            controller: _scrollController,
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            children: [
-                              _buildSection('Frequently Used Apps', frequentlyUsedApps),
-                              if (searchQuery.isEmpty)
-                                _buildSection('Other Applications', otherApps),
-                              if (hasMoreItems && isLoadingMore && searchQuery.isEmpty)
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 16.0),
-                                  child: Center(
-                                    child: CircularProgressIndicator(),
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Container(
+        color: Colors.white,
+        child: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CustomHeader(
+                title: 'Apps affecting your Score',
+                onBackPressed: () => Navigator.pop(context),
+              ),
+              Expanded(
+                child: Container(
+                  color: AppColors.contentAreaBackground,
+                  child: Column(
+                    children: [
+                      AppSearchBar(
+                        onSearch: _onSearch,
+                        controller: _searchController,
+                      ),
+                      Expanded(
+                        child: isLoading
+                          ? const Center(child: CircularProgressIndicator())
+                          : ListView(
+                              controller: _scrollController,
+                              padding: const EdgeInsets.symmetric(horizontal: 20),
+                              children: [
+                                _buildSection('Frequently Used Apps', frequentlyUsedApps),
+                                if (searchQuery.isEmpty)
+                                  _buildSection('Other Applications', otherApps),
+                                if (hasMoreItems && isLoadingMore && searchQuery.isEmpty)
+                                  const Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 16.0),
+                                    child: Center(
+                                      child: CircularProgressIndicator(),
+                                    ),
                                   ),
-                                ),
-                            ],
-                          ),
-                    ),
-                  ],
+                              ],
+                            ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            CustomNavBar(),
-          ],
+              CustomNavBar(),
+            ],
+          ),
         ),
       ),
-    ),
     );
   }
 }

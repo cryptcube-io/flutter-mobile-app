@@ -1,24 +1,28 @@
 import 'package:flutter/services.dart';
 import 'dart:convert';
-
 import '../models/permission_structure.dart';
+import '../../../services/logger_service.dart';
 
-class AppPermissionChecker {
-  static const _channel = MethodChannel('app_permissions');
+class AppPermissionChecker with LoggerMixin {
+  final MethodChannel _channel = const MethodChannel('app_permissions');
 
-  static Future<Map<String, String>> getAppPermissions(String packageName) async {
+  Future<Map<String, String>> getAppPermissions(String packageName) async {
     try {
-      final Map<dynamic, dynamic> result = await _channel.invokeMethod('getAppPermissions', {
-        'packageName': packageName
-      });
+      logInfo('Fetching permissions for package: $packageName');
+      final Map<dynamic, dynamic> result = await _channel.invokeMethod(
+        'getAppPermissions',
+        {'packageName': packageName},
+      );
+
+      logDebug('Permissions retrieved for $packageName: $result');
       return Map<String, String>.from(result);
-    } on PlatformException catch (e) {
-      print('Error getting app permissions: ${e.message}');
+    } on PlatformException catch (e, stackTrace) {
+      logError('Error getting app permissions for $packageName', e, stackTrace);
       return {};
     }
   }
 
-  static void _updateStructure(Map<String, dynamic> structure, Map<String, String> permissions) {
+  void _updateStructure(Map<String, dynamic> structure, Map<String, String> permissions) {
     structure.forEach((key, value) {
       if (value is Map<String, dynamic>) {
         if (value.containsKey('status')) {
@@ -32,32 +36,34 @@ class AppPermissionChecker {
     });
   }
 
-  static Future<void> printStructuredPermissions(String packageName) async {
+  Future<void> printStructuredPermissions(String packageName) async {
     try {
+      logInfo('Generating structured permissions for package: $packageName');
+
       final permissions = await getAppPermissions(packageName);
-      
-      print('BEGIN RAW PERMISSIONS');
-      print('Package: $packageName');
+
+      logInfo('BEGIN RAW PERMISSIONS for $packageName');
       permissions.forEach((key, value) {
-        print('$key: $value');
+        logDebug('$key: $value');
       });
-      print('END RAW PERMISSIONS\n');
-      
-      final Map<String, dynamic> result = json.decode(json.encode(PermissionStructure.structure));
-      
+      logInfo('END RAW PERMISSIONS');
+
+      final Map<String, dynamic> result =
+          json.decode(json.encode(PermissionStructure.structure));
+
       _updateStructure(result, permissions);
-      
-      print('BEGIN STRUCTURED PERMISSIONS');
+
+      logInfo('BEGIN STRUCTURED PERMISSIONS for $packageName');
       final prettyJson = JsonEncoder.withIndent('  ').convert(result);
       const int chunkSize = 800;
       for (var i = 0; i < prettyJson.length; i += chunkSize) {
         var end = (i + chunkSize < prettyJson.length) ? i + chunkSize : prettyJson.length;
-        print(prettyJson.substring(i, end));
+        logDebug(prettyJson.substring(i, end));
       }
-      print('END STRUCTURED PERMISSIONS');
-      
-    } catch (e) {
-      print('Error: $e');
+      logInfo('END STRUCTURED PERMISSIONS');
+
+    } catch (e, stackTrace) {
+      logError('Error generating structured permissions for $packageName', e, stackTrace);
     }
   }
 }

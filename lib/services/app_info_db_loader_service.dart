@@ -1,23 +1,23 @@
 import 'package:Cryptcube_mobile_app/constants/api_endpoints.dart';
 import 'package:dio/dio.dart';
 import 'package:hive/hive.dart';
-import 'dart:developer' as developer;
 import '../models/app_info_database.dart';
 import 'installed_apps_service.dart';
+import '../../../services/logger_service.dart';
 
-class AppInfoDbLoaderService {
+class AppInfoDbLoaderService with LoggerMixin {
   final InstalledAppsService _installedAppsService = InstalledAppsService();
   final Dio _dio = Dio();
   late Box<AppInfoEntity> _appPrivacyBox;
 
-  static const String _authToken = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzYW5rZXQua29yZ2FvbmthckBwcm90b25tYWlsMTAxLmNvbSIsImlhdCI6MTczNzA0ODEyNywiZXhwIjoxNzM4MzQ0MTI3fQ.pX8ZmWA6dQqIyYLWfj-7nO_vpTZME66ck9bwJ-wYsto';
+  static const String _authToken = 'YOUR_AUTH_TOKEN_HERE';
 
   Future<void> init() async {
     try {
       _appPrivacyBox = await Hive.openBox<AppInfoEntity>('app_privacy');
-      developer.log('AppPrivacyService initialized successfully', name: 'AppPrivacy');
-    } catch (e) {
-      developer.log('Failed to initialize AppPrivacyService: $e', name: 'AppPrivacy');
+      logInfo('AppPrivacyService initialized successfully');
+    } catch (e, stackTrace) {
+      logError('Failed to initialize AppPrivacyService', e, stackTrace);
       rethrow;
     }
   }
@@ -25,9 +25,9 @@ class AppInfoDbLoaderService {
   Future<void> clearExistingData() async {
     try {
       await _appPrivacyBox.clear();
-      developer.log('Cleared existing app privacy data', name: 'AppPrivacy');
-    } catch (e) {
-      developer.log('Error clearing app privacy data: $e', name: 'AppPrivacy');
+      logInfo('Cleared existing app privacy data');
+    } catch (e, stackTrace) {
+      logError('Error clearing app privacy data', e, stackTrace);
       rethrow;
     }
   }
@@ -38,6 +38,7 @@ class AppInfoDbLoaderService {
 
   Future<String> _getPrivacyScore(String appName, String appVector) async {
     try {
+      logDebug('Fetching privacy score for: $appName');
       final response = await _dio.get(
         ApiEndpoints.getApplicationPrivacyScore,
         queryParameters: {
@@ -45,27 +46,22 @@ class AppInfoDbLoaderService {
           'appVector': appVector,
         },
         options: Options(
-          headers: {
-            'Authorization': 'Bearer $_authToken',
-          },
+          headers: {'Authorization': 'Bearer $_authToken'},
         ),
       );
       return response.data.toString();
-    } on DioException catch (e) {
-      developer.log(
-        'Dio error getting privacy score for $appName: ${e.message}', 
-        name: 'AppPrivacy',
-        error: e
-      );
+    } on DioException catch (e, stackTrace) {
+      logError('Dio error getting privacy score for $appName', e, stackTrace);
       return '';
-    } catch (e) {
-      developer.log('Error getting privacy score for $appName: $e', name: 'AppPrivacy');
+    } catch (e, stackTrace) {
+      logError('Error getting privacy score for $appName', e, stackTrace);
       return '';
     }
   }
 
   Future<String> _getScoreExplanation(String appName, String appVector) async {
     try {
+      logDebug('Fetching score explanation for: $appName');
       final response = await _dio.get(
         ApiEndpoints.getApplicationScoreExplanation,
         queryParameters: {
@@ -73,35 +69,28 @@ class AppInfoDbLoaderService {
           'appVector': appVector,
         },
         options: Options(
-          headers: {
-            'Authorization': 'Bearer $_authToken',
-          },
+          headers: {'Authorization': 'Bearer $_authToken'},
         ),
       );
       return response.data.toString();
-    } on DioException catch (e) {
-      developer.log(
-        'Dio error getting score explanation for $appName: ${e.message}', 
-        name: 'AppPrivacy',
-        error: e
-      );
+    } on DioException catch (e, stackTrace) {
+      logError('Dio error getting score explanation for $appName', e, stackTrace);
       return '';
-    } catch (e) {
-      developer.log('Error getting score explanation for $appName: $e', name: 'AppPrivacy');
+    } catch (e, stackTrace) {
+      logError('Error getting score explanation for $appName', e, stackTrace);
       return '';
     }
   }
 
   Future<void> updateAppPrivacyData() async {
     try {
-      developer.log('Starting privacy data update cycle', name: 'AppPrivacy');
-      
+      logInfo('Starting privacy data update cycle');
       await clearExistingData();
       
       final List<Object> apps = await _installedAppsService.getInstalledAppsWithUsage();
       int processedApps = 0;
       int uniqueApps = 0;
-      
+
       for (var app in apps) {
         try {
           processedApps++;
@@ -115,11 +104,8 @@ class AppInfoDbLoaderService {
           }
 
           final String packageName = appMap['packageName']?.toString() ?? '';
-          
-          if (!_isAppDataUnique(packageName)) {
-            continue;
-          }
-          
+          if (!_isAppDataUnique(packageName)) continue;
+
           final String appName = appMap['appName']?.toString() ?? '';
           final privacyScore = await _getPrivacyScore(appName, packageName);
           final scoreExplanation = await _getScoreExplanation(appName, packageName);
@@ -130,34 +116,25 @@ class AppInfoDbLoaderService {
           final appPrivacyInfo = AppInfoEntity.fromMap(appMap);
           await _appPrivacyBox.put(packageName, appPrivacyInfo);
           uniqueApps++;
-          
-        } catch (e) {
-          developer.log('Error processing app: $e', name: 'AppPrivacy');
+        } catch (e, stackTrace) {
+          logError('Error processing app', e, stackTrace);
           continue;
         }
       }
 
-      developer.log(
-        'Update cycle completed - Processed: $processedApps, Unique: $uniqueApps', 
-        name: 'AppPrivacy'
-      );
-      
+      logInfo('Update cycle completed - Processed: $processedApps, Unique: $uniqueApps');
     } catch (e, stackTrace) {
-      developer.log(
-        'Error in update cycle: $e\n$stackTrace', 
-        name: 'AppPrivacy',
-        error: e,
-        stackTrace: stackTrace
-      );
+      logError('Error in update cycle', e, stackTrace);
       rethrow;
     }
   }
 
   Future<List<AppInfoEntity>> getAllAppPrivacyInfo() async {
     try {
+      logInfo('Fetching all stored app privacy data');
       return _appPrivacyBox.values.toList();
-    } catch (e) {
-      developer.log('Error getting all app privacy info: $e', name: 'AppPrivacy');
+    } catch (e, stackTrace) {
+      logError('Error retrieving stored app privacy info', e, stackTrace);
       return [];
     }
   }
@@ -165,40 +142,33 @@ class AppInfoDbLoaderService {
   Future<void> printStoredData() async {
     try {
       final allData = await getAllAppPrivacyInfo();
-      developer.log('Total apps stored in DB: ${allData.length}', name: 'AppPrivacy');
+      logInfo('Total apps stored in DB: ${allData.length}');
       
       for (var app in allData) {
-        developer.log(
-          'App Details:\n'
-          '-------------\n'
-          'App Name: ${app.appName}\n'
-          'Package Name: ${app.packageName}\n'
-          'Privacy Score: ${app.privacyScore}\n'
-          'Score Explanation: ${app.scoreExplanation}\n'
-          'Usage Time: ${app.usageTimeInMilliseconds}ms\n'
-          'Install Date: ${app.installationDate}\n'
-          'Version: ${app.version}\n'
-          'Operating System: ${app.operatingSystem}\n'
-          '-------------',
-          name: 'AppPrivacy'
-        );
+        logDebug('''
+        App Details:
+        -------------
+        App Name: ${app.appName}
+        Package Name: ${app.packageName}
+        Privacy Score: ${app.privacyScore}
+        Score Explanation: ${app.scoreExplanation}
+        Usage Time: ${app.usageTimeInMilliseconds}ms
+        Install Date: ${app.installationDate}
+        Version: ${app.version}
+        Operating System: ${app.operatingSystem}
+        -------------''');
       }
     } catch (e, stackTrace) {
-      developer.log(
-        'Error printing stored data: $e\n$stackTrace', 
-        name: 'AppPrivacy',
-        error: e,
-        stackTrace: stackTrace
-      );
+      logError('Error printing stored data', e, stackTrace);
     }
   }
 
   Future<void> close() async {
     try {
       await _appPrivacyBox.close();
-      developer.log('AppPrivacyService closed successfully', name: 'AppPrivacy');
-    } catch (e) {
-      developer.log('Error closing AppPrivacyService: $e', name: 'AppPrivacy');
+      logInfo('AppPrivacyService closed successfully');
+    } catch (e, stackTrace) {
+      logError('Error closing AppPrivacyService', e, stackTrace);
       rethrow;
     }
   }

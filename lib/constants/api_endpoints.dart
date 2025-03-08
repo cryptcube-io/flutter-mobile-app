@@ -4,7 +4,7 @@ class ApiEndpoints {
   static const String privacy = '$baseUrl/api/privacyConverse';
   static const String signInUrl =
       '$baseUrl/api/auth/signin?usernameOrEmail=mo3pheus&password=proton101';
-  static const String appManifest = '$baseUrl/privacyShield/getSupportedApps';
+  static const String appManifest = '$baseUrl/appSupport/uploadAppManifest';
 
   static const String getOverallPrivacyScore =
       '$baseUrl/privacyScore/getOverallPrivacyScore';
