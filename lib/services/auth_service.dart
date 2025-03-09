@@ -47,10 +47,17 @@ class AuthService with LoggerMixin {
   Future<String> signIn(String usernameOrEmail, String password) async {
     try {
       logInfo('Initiating sign in for user: $usernameOrEmail');
+      
+      final formData = FormData.fromMap({
+        'usernameOrEmail': usernameOrEmail,
+        'password': password,
+      });
+      
       logDebug('Sign in request URL: ${ApiEndpoints.signInUrl}');
 
       final response = await _dio.post(
         ApiEndpoints.signInUrl,
+        data: formData,
         options: Options(
           contentType: 'application/x-www-form-urlencoded',
           validateStatus: (status) => true,
@@ -67,12 +74,9 @@ class AuthService with LoggerMixin {
           return token;
         }
       }
-
-      var defaultToken =
-          dotenv.env['DEFAULT_AUTH_TOKEN'] ?? '';
-      await saveToken(defaultToken);
-      logInfo('Using default token due to authentication failure');
-      return defaultToken;
+      
+      logError('Sign in failed: Invalid response format or authentication failed');
+      throw Exception('Authentication failed');
     } catch (e, stackTrace) {
       logError('Sign in failed', e, stackTrace);
       if (e is DioException) {
@@ -81,12 +85,7 @@ class AuthService with LoggerMixin {
             e,
             stackTrace);
       }
-
-      var defaultToken =
-          dotenv.env['DEFAULT_AUTH_TOKEN'] ?? '';
-      await saveToken(defaultToken);
-      logInfo('Using default token due to exception');
-      return defaultToken;
+      throw Exception('Failed to sign in: $e');
     }
   }
 
@@ -105,10 +104,10 @@ class AuthService with LoggerMixin {
       });
 
       logInfo('Initiating sign up for user: $username');
-      logDebug('Sign up request URL: $baseUrl/api/auth/signup');
+      logDebug('Sign up request URL: ${ApiEndpoints.signUpUrl}');
 
       final response = await _dio.post(
-        '$baseUrl/api/auth/signup',
+        ApiEndpoints.signUpUrl,
         data: formData,
         options: Options(
           contentType: 'application/x-www-form-urlencoded',
