@@ -1,5 +1,6 @@
 import 'package:Cryptcube_mobile_app/presentation/pages/score/app_list.dart';
 import 'package:flutter/material.dart';
+import '../../../core/theme/colors/app_colors.dart';
 import '../../../models/app_data.dart';
 import '../../../services/app_icon_manager.dart';
 import '../../../services/app_loader_service.dart';
@@ -67,7 +68,7 @@ class _FrequentlyUsedAppsCardState extends State<FrequentlyUsedAppsCard> {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w500,
-              color: Colors.black54,
+              color: AppColors.textTertiary,
             ),
           ),
           const SizedBox(height: 20),

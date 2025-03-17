@@ -9,4 +9,5 @@ class ApiEndpoints {
   static const String getOverallScoreExplanation = '$baseUrl/privacyScore/getOverallScoreExplanation';
   static const String getApplicationScoreExplanation = '$baseUrl/privacyScore/getApplicationScoreExplanation';
   static const String uploadAppDataVector = '$baseUrl/privacyScore/uploadAppDataVector';
+  static const String getAllConversationHistory = '$baseUrl/history/getAllConversationHistory';
 }
