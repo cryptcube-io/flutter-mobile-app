@@ -22,11 +22,11 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with LoggerMixin {
   final InstalledAppsService _appsService = InstalledAppsService();
-  final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-  final AppPermissionChecker appPermissionChecker = AppPermissionChecker();
-  final bluetoothScanner = BluetoothScanner();
-  final wifiScanner = WifiScanner();
-  final AppInfoDbLoaderService _appPrivacyService = AppInfoDbLoaderService();
+  // final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+  // final AppPermissionChecker appPermissionChecker = AppPermissionChecker();
+  // final bluetoothScanner = BluetoothScanner();
+  // final wifiScanner = WifiScanner();
+  // final AppInfoDbLoaderService _appPrivacyService = AppInfoDbLoaderService();
 
   @override
   void initState() {
@@ -38,7 +38,7 @@ class _HomePageState extends State<HomePage> with LoggerMixin {
   Future<void> _checkPermissions() async {
     try {
       logInfo('Starting permission checks');
-      await _appPrivacyService.init();
+      await _appsService.processAndSendAppsData();
       logInfo('App privacy service initialized successfully');
     } catch (e, stackTrace) {
       logError('Error checking permissions', e, stackTrace);

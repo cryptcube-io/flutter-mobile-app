@@ -11,7 +11,7 @@ import '../../components/custom_navbar.dart';
 import '../../components/chatPage/typing_indicator.dart';
 import '../../components/shared/header.dart';
 
-class ChatPage extends StatefulWidget with LoggerMixin {
+class ChatPage extends StatefulWidget {
   final String appName;
   final Uint8List? iconBytes;
 
@@ -139,7 +139,7 @@ class _ChatPageState extends State<ChatPage> with LoggerMixin {
   }
 
   Widget _buildAppHeader() {
-    logDebug('Building app header');
+    // logDebug('Building app header');
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 10),
@@ -197,7 +197,7 @@ class _ChatPageState extends State<ChatPage> with LoggerMixin {
 
   @override
   Widget build(BuildContext context) {
-    logDebug('Building ChatPage widget');
+    // logDebug('Building ChatPage widget');
     return Scaffold(
       backgroundColor: AppColors.transparent,
       resizeToAvoidBottomInset: true,

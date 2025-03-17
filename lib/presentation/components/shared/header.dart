@@ -17,7 +17,7 @@ class CustomHeader extends StatelessWidget with LoggerMixin {
 
   @override
   Widget build(BuildContext context) {
-    logDebug('Building CustomHeader with title: $title, showBackButton: $showBackButton');
+    // logDebug('Building CustomHeader with title: $title, showBackButton: $showBackButton');
     
     try {
       // Set system UI overlay style to match white background
@@ -25,10 +25,10 @@ class CustomHeader extends StatelessWidget with LoggerMixin {
         statusBarColor: Colors.white,
         statusBarIconBrightness: Brightness.dark,
       ));
-      logDebug('SystemUIOverlayStyle set to dark with white background');
+      // logDebug('SystemUIOverlayStyle set to dark with white background');
 
       final statusBarHeight = MediaQuery.of(context).padding.top;
-      logDebug('Status bar height: $statusBarHeight');
+      // logDebug('Status bar height: $statusBarHeight');
 
       return Material(
         color: Colors.white,

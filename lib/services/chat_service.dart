@@ -14,7 +14,6 @@ class ChatService with LoggerMixin {
       }
 
       logInfo('Making privacy API request for app: $appName with question: "$question"');
-
       final response = await _dio.get(
         ApiEndpoints.privacy,
         queryParameters: {
@@ -27,8 +26,8 @@ class ChatService with LoggerMixin {
           validateStatus: (status) => true,
         ),
       );
-
       logDebug('Privacy API response status: ${response.statusCode}');
+      logDebug('Full response data: ${response.data}');
 
       if (response.data == null || response.data['response'] == null) {
         logError('Invalid response format received');
@@ -37,35 +36,28 @@ class ChatService with LoggerMixin {
 
       logDebug('Received response data from privacy API');
       final responseStr = response.data['response'] as String;
-
       final startIndex = responseStr.indexOf("response='") + 10;
       final endIndex = responseStr.lastIndexOf("'}");
-
       if (startIndex <= 9 || endIndex == -1) {
         logError('Malformed response format detected');
         return 'Could not process the response';
       }
 
       final jsonStr = responseStr.substring(startIndex, endIndex);
-      
       try {
         final responseJson = json.decode(jsonStr);
         logDebug('Successfully parsed response JSON');
-
         if (responseJson.containsKey('inferenceResponse')) {
           String inferenceStr = responseJson['inferenceResponse'].toString();
-          
           try {
             if (inferenceStr.contains('"answer"')) {
               final answerStart = inferenceStr.indexOf('"answer"') + 9;
               String answer = inferenceStr.substring(answerStart)
-                  .replaceAll(RegExp(r'[{}"\\n]'), ' ')
-                  .trim();
-
+                .replaceAll(RegExp(r'[{}"\\n]'), ' ')
+                .trim();
               if (answer.endsWith('} }')) {
                 answer = answer.substring(0, answer.length - 4).trim();
               }
-
               logInfo('Successfully extracted answer from response');
               return answer;
             }
@@ -78,10 +70,8 @@ class ChatService with LoggerMixin {
       } catch (e, stackTrace) {
         logError('Error parsing response JSON', e, stackTrace);
       }
-
       logError('No valid answer found in API response');
       return 'Could not extract a valid answer from the response';
-      
     } on DioException catch (e, stackTrace) {
       logError('API connection error', e, stackTrace);
       return 'Connection error: ${e.message}';

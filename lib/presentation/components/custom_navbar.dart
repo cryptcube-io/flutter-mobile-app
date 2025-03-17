@@ -11,15 +11,7 @@ class CustomNavBar extends StatelessWidget with LoggerMixin {
 
   @override
   Widget build(BuildContext context) {
-    logDebug('Building CustomNavBar, currentIndex: ${navigationService.currentIndex}');
-    
-    // Log asset bundle to check if assets are properly registered
-    DefaultAssetBundle.of(context).loadString('AssetManifest.json').then((manifestJson) {
-      logDebug('Asset manifest available: ${manifestJson.substring(0, Math.min(100, manifestJson.length))}...');
-    }).catchError((error, stackTrace) {
-      logError('Failed to load asset manifest', error, stackTrace);
-    });
-    
+    // logDebug('Building navbar with current index: ${navigationService.currentIndex}');
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -83,16 +75,11 @@ class CustomNavBar extends StatelessWidget with LoggerMixin {
     int index,
     bool isSelected,
   ) {
-    logDebug('Building nav item: $label, index: $index, isSelected: $isSelected');
-    
     return GestureDetector(
       onTap: () {
-        logInfo('Tapped on nav item: $label with index: $index');
+        logInfo('Navigating to: $label');
         if (index != 0) {
-          logInfo('Navigating to page with index: $index');
           navigationService.navigateToPage(context, index);
-        } else {
-          logInfo('Navigation skipped for index 0');
         }
       },
       child: Column(
@@ -101,18 +88,6 @@ class CustomNavBar extends StatelessWidget with LoggerMixin {
           Builder(
             builder: (context) {
               final path = isSelected ? selectedSvgPath : unselectedSvgPath;
-              
-              // Check if file exists in asset bundle
-              bool fileExists = false;
-              try {
-                DefaultAssetBundle.of(context).load(path).then((_) {
-                  fileExists = true;
-                  
-                }).catchError((error) {
-                });
-              } catch (e) {
-                logDebug('Error checking if file exists: $path');
-              }
               
               try {
                 return SvgPicture.asset(
@@ -125,7 +100,7 @@ class CustomNavBar extends StatelessWidget with LoggerMixin {
                   ),
                 );
               } catch (e, stackTrace) {
-               
+                logError('Failed to load icon: $path', e, stackTrace);
                 return Container(
                   width: 24,
                   height: 24,
